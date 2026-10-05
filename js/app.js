@@ -2,6 +2,11 @@
  * ==========================================================================
  * 초등 3학년 학급경영 & 게이미피케이션 웹 앱 통합 스크립트 (app.js)
  * 파일 더블클릭(file://) 및 웹 서버(http://) 환경 모두 완벽 지원
+ * 
+ * - 학생/교사 개별 분리 로그인 지원
+ * - 화폐 단위: '스마일' (🪙)
+ * - 성장 지표: '레벨 포인트 / EXP' (⭐)
+ * - 1인 1역할 교사 직접 편집 & 주간 배정 지원
  * ==========================================================================
  */
 
@@ -26,38 +31,38 @@ const INITIAL_ROLES = [
   { id: 'role-17', name: '환경 지킴이', icon: '🗑️', desc: '교실 바닥에 떨어진 쓰레기 줍고 정리 솔선수범하기' },
   { id: 'role-18', name: '문단속 도우미', icon: '🔑', desc: '하교 시 교실 앞문과 뒷문 잠겼는지 확인하기' },
   { id: 'role-19', name: '게시판 도우미', icon: '📌', desc: '학급 게시판 작품 및 안내장 가지런히 고정하기' },
-  { id: 'role-20', name: '스마일 알리미', icon: '😊', desc: '하루 시작할 때 친구들에게 밝은 미소로 인사 건네기' }
+  { id: 'role-20', name: '인사 알리미', icon: '😊', desc: '하루 시작할 때 친구들에게 밝은 미소로 반갑게 인사하기' }
 ];
 
 const LEVEL_TIERS = [
-  { level: 1, name: '새싹 탐험가', minSmiles: 0, maxSmiles: 19, badge: '🌱', color: '#10B981' },
-  { level: 2, name: '성장하는 모험가', minSmiles: 20, maxSmiles: 49, badge: '🌿', color: '#06B6D4' },
-  { level: 3, name: '열정의 열매', minSmiles: 50, maxSmiles: 99, badge: '🍎', color: '#F59E0B' },
-  { level: 4, name: '학급의 달인', minSmiles: 100, maxSmiles: 199, badge: '⭐', color: '#8B5CF6' },
-  { level: 5, name: '스마일 마스터', minSmiles: 200, maxSmiles: 9999, badge: '👑', color: '#EC4899' }
+  { level: 1, name: '새싹 탐험가', minExp: 0, maxExp: 19, badge: '🌱', color: '#10B981' },
+  { level: 2, name: '성장하는 모험가', minExp: 20, maxExp: 49, badge: '🌿', color: '#06B6D4' },
+  { level: 3, name: '열정의 열매', minExp: 50, maxExp: 99, badge: '🍎', color: '#F59E0B' },
+  { level: 4, name: '학급의 달인', minExp: 100, maxExp: 199, badge: '⭐', color: '#8B5CF6' },
+  { level: 5, name: '최고 레벨 마스터', minExp: 200, maxExp: 9999, badge: '👑', color: '#EC4899' }
 ];
 
 const INITIAL_STUDENTS = [
-  { id: 's-1', no: 1, name: '김민준', avatar: '🦁', coins: 180, smiles: 28, roleId: 'role-1', roleCompleted: false },
-  { id: 's-2', no: 2, name: '이서아', avatar: '🐰', coins: 250, smiles: 55, roleId: 'role-2', roleCompleted: true },
-  { id: 's-3', no: 3, name: '박도윤', avatar: '🐯', coins: 120, smiles: 18, roleId: 'role-3', roleCompleted: false },
-  { id: 's-4', no: 4, name: '정하은', avatar: '🦊', coins: 310, smiles: 72, roleId: 'role-4', roleCompleted: true },
-  { id: 's-5', no: 5, name: '최지호', avatar: '🐼', coins: 150, smiles: 25, roleId: 'role-5', roleCompleted: false },
-  { id: 's-6', no: 6, name: '윤아인', avatar: '🐨', coins: 220, smiles: 44, roleId: 'role-6', roleCompleted: false },
-  { id: 's-7', no: 7, name: '한시우', avatar: '🐶', coins: 190, smiles: 36, roleId: 'role-7', roleCompleted: true },
-  { id: 's-8', no: 8, name: '송지우', avatar: '🐱', coins: 280, smiles: 63, roleId: 'role-8', roleCompleted: false },
-  { id: 's-9', no: 9, name: '강유준', avatar: '🐻', coins: 140, smiles: 22, roleId: 'role-9', roleCompleted: false },
-  { id: 's-10', no: 10, name: '조은서', avatar: '🐸', coins: 300, smiles: 68, roleId: 'role-10', roleCompleted: true },
-  { id: 's-11', no: 11, name: '오민서', avatar: '🦄', coins: 210, smiles: 40, roleId: 'role-11', roleCompleted: false },
-  { id: 's-12', no: 12, name: '배현우', avatar: '🐵', coins: 170, smiles: 30, roleId: 'role-12', roleCompleted: false },
-  { id: 's-13', no: 13, name: '백소율', avatar: '🐹', coins: 260, smiles: 52, roleId: 'role-13', roleCompleted: true },
-  { id: 's-14', no: 14, name: '유서진', avatar: '🐧', coins: 190, smiles: 35, roleId: 'role-14', roleCompleted: false },
-  { id: 's-15', no: 15, name: '임예준', avatar: '🐤', coins: 130, smiles: 19, roleId: 'role-15', roleCompleted: false },
-  { id: 's-16', no: 16, name: '황채원', avatar: '🦔', coins: 240, smiles: 48, roleId: 'role-16', roleCompleted: true },
-  { id: 's-17', no: 17, name: '신은우', avatar: '🐿️', coins: 200, smiles: 38, roleId: 'role-17', roleCompleted: false },
-  { id: 's-18', no: 18, name: '안서윤', avatar: '🦭', coins: 290, smiles: 65, roleId: 'role-18', roleCompleted: false },
-  { id: 's-19', no: 19, name: '류하준', avatar: '🐺', coins: 160, smiles: 26, roleId: 'role-19', roleCompleted: false },
-  { id: 's-20', no: 20, name: '문지안', avatar: '🦉', coins: 330, smiles: 85, roleId: 'role-20', roleCompleted: true }
+  { id: 's-1', no: 1, name: '김민준', avatar: '🦁', coins: 180, exp: 28, roleId: 'role-1', roleCompleted: false },
+  { id: 's-2', no: 2, name: '이서아', avatar: '🐰', coins: 250, exp: 55, roleId: 'role-2', roleCompleted: true },
+  { id: 's-3', no: 3, name: '박도윤', avatar: '🐯', coins: 120, exp: 18, roleId: 'role-3', roleCompleted: false },
+  { id: 's-4', no: 4, name: '정하은', avatar: '🦊', coins: 310, exp: 72, roleId: 'role-4', roleCompleted: true },
+  { id: 's-5', no: 5, name: '최지호', avatar: '🐼', coins: 150, exp: 25, roleId: 'role-5', roleCompleted: false },
+  { id: 's-6', no: 6, name: '윤아인', avatar: '🐨', coins: 220, exp: 44, roleId: 'role-6', roleCompleted: false },
+  { id: 's-7', no: 7, name: '한시우', avatar: '🐶', coins: 190, exp: 36, roleId: 'role-7', roleCompleted: true },
+  { id: 's-8', no: 8, name: '송지우', avatar: '🐱', coins: 280, exp: 63, roleId: 'role-8', roleCompleted: false },
+  { id: 's-9', no: 9, name: '강유준', avatar: '🐻', coins: 140, exp: 22, roleId: 'role-9', roleCompleted: false },
+  { id: 's-10', no: 10, name: '조은서', avatar: '🐸', coins: 300, exp: 68, roleId: 'role-10', roleCompleted: true },
+  { id: 's-11', no: 11, name: '오민서', avatar: '🦄', coins: 210, exp: 40, roleId: 'role-11', roleCompleted: false },
+  { id: 's-12', no: 12, name: '배현우', avatar: '🐵', coins: 170, exp: 30, roleId: 'role-12', roleCompleted: false },
+  { id: 's-13', no: 13, name: '백소율', avatar: '🐹', coins: 260, exp: 52, roleId: 'role-13', roleCompleted: true },
+  { id: 's-14', no: 14, name: '유서진', avatar: '🐧', coins: 190, exp: 35, roleId: 'role-14', roleCompleted: false },
+  { id: 's-15', no: 15, name: '임예준', avatar: '🐤', coins: 130, exp: 19, roleId: 'role-15', roleCompleted: false },
+  { id: 's-16', no: 16, name: '황채원', avatar: '🦔', coins: 240, exp: 48, roleId: 'role-16', roleCompleted: true },
+  { id: 's-17', no: 17, name: '신은우', avatar: '🐿️', coins: 200, exp: 38, roleId: 'role-17', roleCompleted: false },
+  { id: 's-18', no: 18, name: '안서윤', avatar: '🦭', coins: 290, exp: 65, roleId: 'role-18', roleCompleted: false },
+  { id: 's-19', no: 19, name: '류하준', avatar: '🐺', coins: 160, exp: 26, roleId: 'role-19', roleCompleted: false },
+  { id: 's-20', no: 20, name: '문지안', avatar: '🦉', coins: 330, exp: 85, roleId: 'role-20', roleCompleted: true }
 ];
 
 const INITIAL_SHOP_ITEMS = [
@@ -136,18 +141,18 @@ const INITIAL_SHOP_ITEMS = [
 ];
 
 const INITIAL_DAILY_MISSIONS = [
-  { id: 'mission-1', title: '아침 독서 10분 몰입하기', icon: '📖', rewardSmiles: 2, rewardCoins: 10 },
-  { id: 'mission-2', title: '책상 위와 서랍 깨끗이 정리하기', icon: '🧹', rewardSmiles: 1, rewardCoins: 5 },
-  { id: 'mission-3', title: '친구에게 고운 말 & 따뜻한 칭찬하기', icon: '💖', rewardSmiles: 2, rewardCoins: 10 }
+  { id: 'mission-1', title: '아침 독서 10분 몰입하기', icon: '📖', rewardExp: 2, rewardCoins: 10 },
+  { id: 'mission-2', title: '책상 위와 서랍 깨끗이 정리하기', icon: '🧹', rewardExp: 1, rewardCoins: 5 },
+  { id: 'mission-3', title: '친구에게 고운 말 & 따뜻한 칭찬하기', icon: '💖', rewardExp: 2, rewardCoins: 10 }
 ];
 
 const REASON_PRESETS = [
-  { label: '발표 적극 참여', coins: 20, smiles: 3 },
-  { label: '친구 배려 및 도움', coins: 30, smiles: 5 },
-  { label: '교실 청소 성실히', coins: 25, smiles: 4 },
-  { label: '1인 1역 완벽 수행', coins: 30, smiles: 5 },
-  { label: '과제 및 일기 제출 우수', coins: 20, smiles: 3 },
-  { label: '급식 골고루 다 먹기', coins: 15, smiles: 2 }
+  { label: '발표 적극 참여', coins: 20, exp: 3 },
+  { label: '친구 배려 및 도움', coins: 30, exp: 5 },
+  { label: '교실 청소 성실히', coins: 25, exp: 4 },
+  { label: '1인 1역 완벽 수행', coins: 30, exp: 5 },
+  { label: '과제 및 일기 제출 우수', coins: 20, exp: 3 },
+  { label: '급식 골고루 다 먹기', coins: 15, exp: 2 }
 ];
 
 const DEDUCT_REASON_PRESETS = [
@@ -223,12 +228,13 @@ function fireConfetti(options = {}) {
 }
 
 // ================= 3. 레벨 계산 및 스토리지 매니저 =================
-const STORAGE_KEY = 'CLASS_ECONOMY_APP_STATE_V1';
+const STORAGE_KEY = 'CLASS_ECONOMY_APP_STATE_V2';
 
-function calculateLevel(smiles) {
+function calculateLevel(exp) {
+  const currentExp = Number(exp) || 0;
   let currentTier = LEVEL_TIERS[0];
   for (let i = LEVEL_TIERS.length - 1; i >= 0; i--) {
-    if (smiles >= LEVEL_TIERS[i].minSmiles) {
+    if (currentExp >= LEVEL_TIERS[i].minExp) {
       currentTier = LEVEL_TIERS[i];
       break;
     }
@@ -236,13 +242,13 @@ function calculateLevel(smiles) {
 
   const nextTier = LEVEL_TIERS.find(t => t.level === currentTier.level + 1);
   let progressPercent = 100;
-  let remainingSmiles = 0;
+  let remainingExp = 0;
 
   if (nextTier) {
-    const range = nextTier.minSmiles - currentTier.minSmiles;
-    const currentProgress = smiles - currentTier.minSmiles;
+    const range = nextTier.minExp - currentTier.minExp;
+    const currentProgress = currentExp - currentTier.minExp;
     progressPercent = Math.min(100, Math.max(0, Math.round((currentProgress / range) * 100)));
-    remainingSmiles = nextTier.minSmiles - smiles;
+    remainingExp = nextTier.minExp - currentExp;
   }
 
   return {
@@ -251,8 +257,8 @@ function calculateLevel(smiles) {
     badge: currentTier.badge,
     color: currentTier.color,
     progressPercent,
-    remainingSmiles,
-    nextLevelMinSmiles: nextTier ? nextTier.minSmiles : null,
+    remainingExp,
+    nextLevelMinExp: nextTier ? nextTier.minExp : null,
     isMaxLevel: !nextTier
   };
 }
@@ -261,8 +267,8 @@ function getInitialState() {
   const studentMissionStatus = {};
   INITIAL_STUDENTS.forEach(s => {
     studentMissionStatus[s.id] = {
-      'mission-1': s.no % 2 === 0,
-      'mission-2': s.no % 3 === 0,
+      'mission-1': Math.random() > 0.5,
+      'mission-2': Math.random() > 0.5,
       'mission-3': false
     };
   });
@@ -310,7 +316,7 @@ function getInitialState() {
       type: 'grant',
       target: '김민준',
       coins: 20,
-      smiles: 3,
+      exp: 3,
       reason: '수업 발표 적극 참여'
     },
     {
@@ -319,7 +325,7 @@ function getInitialState() {
       type: 'grant',
       target: '이서아',
       coins: 30,
-      smiles: 5,
+      exp: 5,
       reason: '1인 1역(우유 급식) 성실 수행'
     },
     {
@@ -328,14 +334,16 @@ function getInitialState() {
       type: 'shop',
       target: '조은서',
       coins: -60,
-      smiles: 0,
+      exp: 0,
       reason: '상점 구매 승인 [반짝반짝 홀로그램 스티커]'
     }
   ];
 
   return {
-    version: '1.0',
-    currentView: 'teacher',
+    version: '2.0',
+    currentUser: null, // null | { role: 'teacher' } | { role: 'student', studentId: 's-1' }
+    teacherPin: '0000',
+    previewStudentId: null, // 교사가 학생 화면 미리보기 중일 때 사용
     students: INITIAL_STUDENTS,
     roles: INITIAL_ROLES,
     shopItems: INITIAL_SHOP_ITEMS,
@@ -355,16 +363,33 @@ function loadState() {
       saveState(state);
       return state;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+
+    // 하위 호환성 및 보정
+    if (parsed.students) {
+      parsed.students.forEach(s => {
+        if (s.exp === undefined && s.smiles !== undefined) {
+          s.exp = s.smiles;
+        }
+      });
+    }
+    if (!parsed.teacherPin) {
+      parsed.teacherPin = '0000';
+    }
+    if (!parsed.roles || parsed.roles.length === 0) {
+      parsed.roles = INITIAL_ROLES;
+    }
+
+    return parsed;
   } catch (err) {
     console.error('Failed to load state from localStorage:', err);
     return getInitialState();
   }
 }
 
-function saveState(state) {
+function saveState(stateObj) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateObj));
   } catch (err) {
     console.error('Failed to save state to localStorage:', err);
   }
@@ -376,25 +401,20 @@ function resetState() {
   return initial;
 }
 
-// ================= 4. 앱 메인 로직 및 인터랙션 =================
+// ================= 4. 앱 전역 상태 및 UI 헬퍼 =================
 let state = loadState();
 let selectedStudentForModal = null;
-let pendingPurchaseItem = null;
+let currentRoleEditList = []; // 1인 1역 모달 내 편집용 임시 버퍼
 
 function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
-  const icons = {
-    success: '🎉',
-    info: '💡',
-    warning: '⚠️',
-    error: '🚨'
-  };
-
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<span>${icons[type] || '🔔'}</span><span>${message}</span>`;
+
+  const icon = type === 'success' ? '🎉' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : '💡';
+  toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -442,76 +462,199 @@ function initModalEvents() {
   });
 }
 
-function initModeSwitcher() {
-  const btnTeacher = document.getElementById('btn-mode-teacher');
-  const studentSelect = document.getElementById('select-active-student');
+// ================= 5. 분리 로그인 및 뷰 제어 시스템 =================
+function initAuthAndViews() {
+  const btnLogout = document.getElementById('btn-logout');
   const brandLogo = document.getElementById('brand-logo');
+  const btnReturnTeacher = document.getElementById('btn-return-teacher-view');
 
-  populateStudentSelect();
+  // 로그인 탭 전환 (학생 로그인 vs 교사 로그인)
+  const tabStudent = document.getElementById('tab-login-student');
+  const tabTeacher = document.getElementById('tab-login-teacher');
+  const panelStudent = document.getElementById('panel-login-student');
+  const panelTeacher = document.getElementById('panel-login-teacher');
 
-  btnTeacher.addEventListener('click', () => {
-    setAppView('teacher');
-  });
+  if (tabStudent && tabTeacher) {
+    tabStudent.addEventListener('click', () => {
+      tabStudent.classList.add('active');
+      tabTeacher.classList.remove('active');
+      panelStudent.style.display = 'block';
+      panelTeacher.style.display = 'none';
+    });
 
-  studentSelect.addEventListener('change', (e) => {
-    const studentId = e.target.value;
-    if (studentId) {
-      setAppView(studentId);
-    }
-  });
+    tabTeacher.addEventListener('click', () => {
+      tabTeacher.classList.add('active');
+      tabStudent.classList.remove('active');
+      panelStudent.style.display = 'none';
+      panelTeacher.style.display = 'block';
+      const pwInput = document.getElementById('input-teacher-pw');
+      if (pwInput) pwInput.focus();
+    });
+  }
 
-  brandLogo.addEventListener('click', () => {
-    setAppView('teacher');
+  // 교사 로그인 폼 제출
+  const formTeacherLogin = document.getElementById('form-teacher-login');
+  if (formTeacherLogin) {
+    formTeacherLogin.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const pwInput = document.getElementById('input-teacher-pw');
+      const enteredPw = (pwInput ? pwInput.value : '').trim();
+
+      if (enteredPw === state.teacherPin) {
+        state.currentUser = { role: 'teacher' };
+        state.previewStudentId = null;
+        saveState(state);
+        if (pwInput) pwInput.value = '';
+        fireConfetti({ count: 60 });
+        showToast('👩‍🏫 선생님 환영합니다! 교사 관리자 모드로 접속했습니다.', 'success');
+        updateAppView();
+      } else {
+        showToast('비밀번호가 올바르지 않습니다. (초기 비밀번호: 0000)', 'error');
+        if (pwInput) {
+          pwInput.value = '';
+          pwInput.focus();
+        }
+      }
+    });
+  }
+
+  // 학생 20명 로그인 타일 그리드 렌더링
+  renderStudentLoginGrid();
+
+  // 로그아웃 버튼
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      if (confirm('로그아웃하고 로그인 선택 화면으로 이동할까요?')) {
+        state.currentUser = null;
+        state.previewStudentId = null;
+        saveState(state);
+        updateAppView();
+        showToast('로그아웃되었습니다.', 'info');
+      }
+    });
+  }
+
+  // 교사 학생화면 미리보기 복귀 버튼
+  if (btnReturnTeacher) {
+    btnReturnTeacher.addEventListener('click', () => {
+      state.previewStudentId = null;
+      saveState(state);
+      updateAppView();
+      showToast('선생님 화면으로 복귀했습니다.', 'info');
+    });
+  }
+
+  // 로고 클릭 시 기본 홈으로
+  if (brandLogo) {
+    brandLogo.addEventListener('click', () => {
+      if (state.currentUser?.role === 'teacher') {
+        state.previewStudentId = null;
+        saveState(state);
+        updateAppView();
+      }
+    });
+  }
+
+  // 초기 뷰 업데이트 실행
+  updateAppView();
+}
+
+function renderStudentLoginGrid() {
+  const container = document.getElementById('student-login-grid-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+  state.students.forEach(student => {
+    const levelInfo = calculateLevel(student.exp);
+    const item = document.createElement('div');
+    item.className = 'student-login-item';
+    item.innerHTML = `
+      <span class="student-login-no">${student.no}번</span>
+      <span class="student-login-avatar">${student.avatar}</span>
+      <span class="student-login-name">${student.name}</span>
+      <span style="font-size: 11px; color: ${levelInfo.color}; font-weight: 700;">Lv.${levelInfo.level} ${levelInfo.name}</span>
+    `;
+
+    item.addEventListener('click', () => {
+      state.currentUser = { role: 'student', studentId: student.id };
+      state.previewStudentId = null;
+      saveState(state);
+      fireConfetti({ count: 70 });
+      showToast(`🎒 ${student.no}번 ${student.name} 어린이 환영해요!`, 'success');
+      updateAppView();
+    });
+
+    container.appendChild(item);
   });
 }
 
-function populateStudentSelect() {
-  const select = document.getElementById('select-active-student');
-  if (!select) return;
+function updateAppView() {
+  const viewLogin = document.getElementById('view-login');
+  const viewTeacher = document.getElementById('view-teacher');
+  const viewStudent = document.getElementById('view-student');
+  const sessionBadge = document.getElementById('session-user-badge');
+  const btnLogout = document.getElementById('btn-logout');
+  const bannerPreview = document.getElementById('banner-teacher-preview');
 
-  select.innerHTML = '<option value="" disabled selected>🎒 학생 화면 선택 (20명)</option>';
-  state.students.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.id;
-    opt.textContent = `${s.no}번 ${s.avatar} ${s.name}`;
-    select.appendChild(opt);
-  });
-}
+  // 1. 미로그인 상태
+  if (!state.currentUser) {
+    viewLogin.style.display = 'block';
+    viewTeacher.style.display = 'none';
+    viewStudent.style.display = 'none';
+    if (bannerPreview) bannerPreview.style.display = 'none';
 
-function setAppView(viewId) {
-  state.currentView = viewId;
-  saveState(state);
+    sessionBadge.className = 'user-badge-pill';
+    sessionBadge.innerHTML = '<span>🔒</span><span>로그인이 필요합니다</span>';
+    btnLogout.style.display = 'none';
 
-  const teacherView = document.getElementById('view-teacher');
-  const studentView = document.getElementById('view-student');
-  const btnTeacher = document.getElementById('btn-mode-teacher');
-  const studentSelect = document.getElementById('select-active-student');
-  const avatarIcon = document.getElementById('student-avatar-icon');
+    renderStudentLoginGrid();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
 
-  if (viewId === 'teacher') {
-    teacherView.style.display = 'block';
-    studentView.style.display = 'none';
-    btnTeacher.classList.add('active');
-    studentSelect.value = '';
-    avatarIcon.textContent = '🎒';
-    renderTeacherDashboard();
-  } else {
-    teacherView.style.display = 'none';
-    studentView.style.display = 'block';
-    btnTeacher.classList.remove('active');
-    studentSelect.value = viewId;
+  // 2. 로그인 상태
+  viewLogin.style.display = 'none';
+  btnLogout.style.display = 'inline-flex';
 
-    const student = state.students.find(s => s.id === viewId);
-    if (student) {
-      avatarIcon.textContent = student.avatar;
+  // 2-A. 교사(관리자) 로그인
+  if (state.currentUser.role === 'teacher') {
+    // 교사가 학생 화면 미리보기 중인 경우
+    if (state.previewStudentId) {
+      viewTeacher.style.display = 'none';
+      viewStudent.style.display = 'block';
+      if (bannerPreview) bannerPreview.style.display = 'flex';
+
+      const previewStudent = state.students.find(s => s.id === state.previewStudentId);
+      sessionBadge.className = 'user-badge-pill teacher';
+      sessionBadge.innerHTML = `<span>👩‍🏫</span><span>선생님 (미리보기: ${previewStudent ? previewStudent.name : ''})</span>`;
+      renderStudentDashboard(state.previewStudentId);
+    } else {
+      // 일반 교사 대시보드
+      viewTeacher.style.display = 'block';
+      viewStudent.style.display = 'none';
+      if (bannerPreview) bannerPreview.style.display = 'none';
+
+      sessionBadge.className = 'user-badge-pill teacher';
+      sessionBadge.innerHTML = '<span>👩‍🏫</span><span>선생님 (관리자) 접속 중</span>';
+      renderTeacherDashboard();
     }
-    renderStudentDashboard(viewId);
+  } 
+  // 2-B. 학생 로그인
+  else if (state.currentUser.role === 'student') {
+    viewTeacher.style.display = 'none';
+    viewStudent.style.display = 'block';
+    if (bannerPreview) bannerPreview.style.display = 'none';
+
+    const currentStudent = state.students.find(s => s.id === state.currentUser.studentId) || state.students[0];
+    sessionBadge.className = 'user-badge-pill student';
+    sessionBadge.innerHTML = `<span>🎒</span><span>${currentStudent.no}번 ${currentStudent.avatar} ${currentStudent.name} 어린이</span>`;
+    renderStudentDashboard(currentStudent.id);
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ================= 5. 교사 대시보드 렌더링 =================
+// ================= 6. 교사 대시보드 렌더링 =================
 function renderTeacherDashboard() {
   renderTeacherStats();
   renderPendingApprovals();
@@ -521,12 +664,12 @@ function renderTeacherDashboard() {
 function renderTeacherStats() {
   const totalStudents = state.students.length;
   const totalCoins = state.students.reduce((acc, cur) => acc + (cur.coins || 0), 0);
-  const totalSmiles = state.students.reduce((acc, cur) => acc + (cur.smiles || 0), 0);
+  const totalExp = state.students.reduce((acc, cur) => acc + (cur.exp || 0), 0);
   const pendingRequests = state.purchaseRequests.filter(r => r.status === 'pending');
 
   document.getElementById('stat-total-students').textContent = `${totalStudents}명`;
-  document.getElementById('stat-total-coins').textContent = `${totalCoins.toLocaleString()} 미소`;
-  document.getElementById('stat-total-smiles').textContent = `${totalSmiles.toLocaleString()} 점`;
+  document.getElementById('stat-total-coins').textContent = `${totalCoins.toLocaleString()} 스마일`;
+  document.getElementById('stat-total-smiles').textContent = `${totalExp.toLocaleString()} 점`;
 
   const pendingCountEl = document.getElementById('stat-pending-count');
   const pulseBadge = document.getElementById('badge-pending-pulse');
@@ -561,7 +704,7 @@ function renderPendingApprovals() {
         <span class="approval-item-icon">${req.itemIcon || '🎁'}</span>
         <div class="approval-text">
           <h4>${req.studentName} 학생</h4>
-          <p>${req.itemName} <span class="cost">(🪙 ${req.price} 미소)</span></p>
+          <p>${req.itemName} <span class="cost">(🪙 ${req.price} 스마일)</span></p>
         </div>
       </div>
       <div class="approval-actions">
@@ -585,7 +728,7 @@ function handleApprovePurchase(reqId) {
   if (!student) return;
 
   if (student.coins < req.price) {
-    showToast(`${student.name} 학생의 보유 화폐가 부족합니다! (현재 ${student.coins} 미소)`, 'warning');
+    showToast(`${student.name} 학생의 보유 화폐가 부족합니다! (현재 ${student.coins} 스마일)`, 'warning');
     return;
   }
 
@@ -604,13 +747,13 @@ function handleApprovePurchase(reqId) {
     type: 'shop',
     target: student.name,
     coins: -req.price,
-    smiles: 0,
+    exp: 0,
     reason: `상점 구매 승인 [${req.itemName}]`
   });
 
   saveState(state);
   fireConfetti({ count: 70 });
-  showToast(`✅ ${student.name} 학생의 [${req.itemName}] 구매를 승인했습니다!`, 'success');
+  showToast(`✅ ${student.name} 학생의 [${req.itemName}] 구매를 승인했습니다! (화폐 ${req.price} 스마일 차감)`, 'success');
   renderTeacherDashboard();
 }
 
@@ -637,7 +780,7 @@ function renderStudentsGrid() {
 
   state.students.forEach(student => {
     const role = state.roles.find(r => r.id === student.roleId) || { name: '미배정', icon: '❓' };
-    const levelInfo = calculateLevel(student.smiles);
+    const levelInfo = calculateLevel(student.exp);
 
     const card = document.createElement('article');
     card.className = 'student-card';
@@ -665,18 +808,18 @@ function renderStudentsGrid() {
       <div class="student-stats-row">
         <div class="stat-pill coin">
           <span>🪙</span>
-          <span>${student.coins.toLocaleString()} 미소</span>
+          <span>${student.coins.toLocaleString()} 스마일</span>
         </div>
         <div class="stat-pill smile">
-          <span>😊</span>
-          <span>${student.smiles} 스마일</span>
+          <span>⭐</span>
+          <span>Lv.${levelInfo.level} (${student.exp} EXP)</span>
         </div>
       </div>
 
       <div class="smile-progress-wrap">
         <div class="progress-meta">
           <span>${levelInfo.name}</span>
-          <span>${levelInfo.isMaxLevel ? 'MAX' : `${levelInfo.remainingSmiles}점 남음`}</span>
+          <span>${levelInfo.isMaxLevel ? 'MAX' : `${levelInfo.remainingExp}점 남음`}</span>
         </div>
         <div class="progress-bar-bg">
           <div class="progress-bar-fill" style="width: ${levelInfo.progressPercent}%; background: ${levelInfo.color}"></div>
@@ -684,7 +827,7 @@ function renderStudentsGrid() {
       </div>
 
       <div class="student-card-actions">
-        <button type="button" class="btn-card-action grant" data-id="${student.id}" title="화폐/스마일 보상 지급">
+        <button type="button" class="btn-card-action grant" data-id="${student.id}" title="화폐(스마일)/레벨 포인트 지급">
           <span>➕</span>
           <span>지급</span>
         </button>
@@ -701,13 +844,17 @@ function renderStudentsGrid() {
 
     card.querySelector('.btn-card-action.grant').addEventListener('click', () => openGrantDeductModal(student.id, 'grant'));
     card.querySelector('.btn-card-action.deduct').addEventListener('click', () => openGrantDeductModal(student.id, 'deduct'));
-    card.querySelector('.btn-card-action.switch-view').addEventListener('click', () => setAppView(student.id));
+    card.querySelector('.btn-card-action.switch-view').addEventListener('click', () => {
+      state.previewStudentId = student.id;
+      saveState(state);
+      updateAppView();
+    });
 
     container.appendChild(card);
   });
 }
 
-// ================= 6. 모달 폼 바인딩 =================
+// ================= 7. 보상 지급/차감 및 일괄 지급 모달 =================
 function openGrantDeductModal(studentId, actionType = 'grant') {
   const student = state.students.find(s => s.id === studentId);
   if (!student) return;
@@ -740,24 +887,24 @@ function openGrantDeductModal(studentId, actionType = 'grant') {
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'chip-btn';
-      chip.textContent = `${p.label} (+${p.coins}🪙, +${p.smiles}😊)`;
+      chip.textContent = `${p.label} (+${p.coins}🪙, +${p.exp}⭐)`;
       chip.addEventListener('click', () => {
         coinsInput.value = p.coins;
-        smilesInput.value = p.smiles;
+        smilesInput.value = p.exp;
         reasonInput.value = p.label;
       });
       presetChips.appendChild(chip);
     });
   } else {
     titleEl.textContent = `⚠️ ${student.no}번 ${student.name} 학생 화폐 차감`;
-    submitBtn.textContent = '차감 실행';
+    submitBtn.textContent = '화폐 차감 적용';
     submitBtn.className = 'btn btn-outline';
     submitBtn.style.color = '#DC2626';
     submitBtn.style.borderColor = '#FCA5A5';
     smilesGroup.style.display = 'none';
     coinsInput.value = '15';
     smilesInput.value = '0';
-    reasonInput.value = '학급 규칙 위반';
+    reasonInput.value = '수업 중 규칙 위반';
 
     DEDUCT_REASON_PRESETS.forEach(p => {
       const chip = document.createElement('button');
@@ -766,7 +913,6 @@ function openGrantDeductModal(studentId, actionType = 'grant') {
       chip.textContent = `${p.label} (-${p.coins}🪙)`;
       chip.addEventListener('click', () => {
         coinsInput.value = p.coins;
-        smilesInput.value = 0;
         reasonInput.value = p.label;
       });
       presetChips.appendChild(chip);
@@ -778,13 +924,14 @@ function openGrantDeductModal(studentId, actionType = 'grant') {
 
 function initGrantDeductForm() {
   const form = document.getElementById('form-grant-deduct');
+  if (!form) return;
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     const studentId = document.getElementById('grant-target-student-id').value;
     const actionType = document.getElementById('grant-action-type').value;
     const coins = parseInt(document.getElementById('input-grant-coins').value, 10) || 0;
-    const smiles = parseInt(document.getElementById('input-grant-smiles').value, 10) || 0;
+    const exp = parseInt(document.getElementById('input-grant-smiles').value, 10) || 0;
     const reason = document.getElementById('input-grant-reason').value.trim();
 
     const student = state.students.find(s => s.id === studentId);
@@ -792,7 +939,7 @@ function initGrantDeductForm() {
 
     if (actionType === 'grant') {
       student.coins += coins;
-      student.smiles += smiles;
+      student.exp += exp;
 
       state.activityLogs.unshift({
         id: `log-${Date.now()}`,
@@ -800,14 +947,20 @@ function initGrantDeductForm() {
         type: 'grant',
         target: student.name,
         coins,
-        smiles,
+        exp,
         reason
       });
 
-      fireConfetti({ count: 60 });
-      showToast(`🎉 ${student.name} 학생에게 화폐 ${coins}미소와 스마일 ${smiles}점을 지급했습니다!`, 'success');
+      closeModal('modal-grant-deduct');
+      fireConfetti({ count: 70 });
+      showToast(`🎉 ${student.name} 학생에게 화폐 ${coins} 스마일과 레벨 포인트 ${exp}점을 지급했습니다!`, 'success');
     } else {
-      student.coins = Math.max(0, student.coins - coins);
+      if (student.coins < coins) {
+        showToast(`보유 화폐가 부족하여 차감 후 잔액이 0 스마일이 됩니다.`, 'warning');
+        student.coins = 0;
+      } else {
+        student.coins -= coins;
+      }
 
       state.activityLogs.unshift({
         id: `log-${Date.now()}`,
@@ -815,138 +968,290 @@ function initGrantDeductForm() {
         type: 'deduct',
         target: student.name,
         coins: -coins,
-        smiles: 0,
+        exp: 0,
         reason
       });
 
-      showToast(`⚠️ ${student.name} 학생의 화폐 ${coins}미소를 차감했습니다.`, 'info');
+      closeModal('modal-grant-deduct');
+      showToast(`⚠️ ${student.name} 학생의 화폐 ${coins} 스마일을 차감했습니다.`, 'info');
     }
 
     saveState(state);
-    closeModal('modal-grant-deduct');
     renderTeacherDashboard();
   });
 }
 
-function initBatchGrantForm() {
+function initBatchGrantModal() {
   const openBtn = document.getElementById('btn-open-batch-grant');
   const form = document.getElementById('form-batch-grant');
 
-  openBtn.addEventListener('click', () => {
-    openModal('modal-batch-grant');
-  });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const coins = parseInt(document.getElementById('input-batch-coins').value, 10) || 0;
-    const smiles = parseInt(document.getElementById('input-batch-smiles').value, 10) || 0;
-    const reason = document.getElementById('input-batch-reason').value.trim();
-
-    state.students.forEach(s => {
-      s.coins += coins;
-      s.smiles += smiles;
-    });
-
-    state.activityLogs.unshift({
-      id: `log-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      type: 'grant',
-      target: '학급 전체 (20명)',
-      coins,
-      smiles,
-      reason: `[전체 일괄] ${reason}`
-    });
-
-    saveState(state);
-    closeModal('modal-batch-grant');
-    fireConfetti({ count: 120 });
-    showToast(`🌟 우리 반 전체 20명에게 화폐 ${coins}미소와 스마일 ${smiles}점을 지급했습니다!`, 'success');
-    renderTeacherDashboard();
-  });
-}
-
-function initRoleAssignModal() {
-  const openBtn = document.getElementById('btn-open-role-assign');
-  const shuffleBtn = document.getElementById('btn-shuffle-roles');
-  const saveBtn = document.getElementById('btn-save-role-assignments');
-  const listContainer = document.getElementById('role-assignment-list');
-
-  openBtn.addEventListener('click', () => {
-    renderRoleAssignmentList();
-    openModal('modal-role-assign');
-  });
-
-  function renderRoleAssignmentList() {
-    listContainer.innerHTML = '';
-
-    state.students.forEach(student => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #F8FAFC; padding: 8px 12px; border-radius: 8px; border: 1px solid #E2E8F0;';
-
-      const left = document.createElement('div');
-      left.style.cssText = 'display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px;';
-      left.innerHTML = `<span>${student.no}번</span><span>${student.avatar}</span><span>${student.name}</span>`;
-
-      const select = document.createElement('select');
-      select.className = 'form-select';
-      select.dataset.studentId = student.id;
-      select.style.cssText = 'max-width: 280px; padding: 6px 10px; font-size: 13px;';
-
-      state.roles.forEach(r => {
-        const opt = document.createElement('option');
-        opt.value = r.id;
-        opt.textContent = `${r.icon} ${r.name}`;
-        if (r.id === student.roleId) opt.selected = true;
-        select.appendChild(opt);
-      });
-
-      row.appendChild(left);
-      row.appendChild(select);
-      listContainer.appendChild(row);
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      openModal('modal-batch-grant');
     });
   }
 
-  shuffleBtn.addEventListener('click', () => {
-    const shuffledRoles = [...state.roles].sort(() => Math.random() - 0.5);
-    const selects = listContainer.querySelectorAll('select[data-student-id]');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const coins = parseInt(document.getElementById('input-batch-coins').value, 10) || 0;
+      const exp = parseInt(document.getElementById('input-batch-smiles').value, 10) || 0;
+      const reason = document.getElementById('input-batch-reason').value.trim();
 
-    selects.forEach((sel, index) => {
-      if (shuffledRoles[index]) {
-        sel.value = shuffledRoles[index].id;
+      state.students.forEach(student => {
+        student.coins += coins;
+        student.exp += exp;
+      });
+
+      state.activityLogs.unshift({
+        id: `log-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        type: 'grant',
+        target: '학급 전체 20명',
+        coins,
+        exp,
+        reason
+      });
+
+      saveState(state);
+      closeModal('modal-batch-grant');
+      fireConfetti({ count: 120 });
+      showToast(`🌟 우리 반 전체 20명에게 화폐 ${coins} 스마일과 레벨 포인트 ${exp}점을 일괄 지급했습니다!`, 'success');
+      renderTeacherDashboard();
+    });
+  }
+}
+
+// ================= 8. 1인 1역 교사 직접 편집 & 주간 배정 모달 =================
+function initRoleAssignModal() {
+  const openBtn = document.getElementById('btn-open-role-assign');
+  const subtabEdit = document.getElementById('subtab-role-edit');
+  const subtabAssign = document.getElementById('subtab-role-assign');
+  const subpaneEdit = document.getElementById('subpane-role-edit');
+  const subpaneAssign = document.getElementById('subpane-role-assign');
+
+  const btnAddNewRole = document.getElementById('btn-add-new-role');
+  const btnResetDefaultRoles = document.getElementById('btn-reset-default-roles');
+  const btnSaveRoleEdits = document.getElementById('btn-save-role-edits');
+
+  const btnShuffle = document.getElementById('btn-shuffle-roles');
+  const btnSaveAssignments = document.getElementById('btn-save-role-assignments');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      // 역할 편집 버퍼 복사
+      currentRoleEditList = JSON.parse(JSON.stringify(state.roles));
+      renderRoleEditorList();
+      renderRoleAssignmentList();
+
+      // 기본으로 편집 탭 열람
+      if (subtabEdit && subtabAssign) {
+        subtabEdit.classList.add('active');
+        subtabAssign.classList.remove('active');
+        subpaneEdit.style.display = 'block';
+        subpaneAssign.style.display = 'none';
+      }
+
+      openModal('modal-role-assign');
+    });
+  }
+
+  // 서브 탭 전환
+  if (subtabEdit && subtabAssign) {
+    subtabEdit.addEventListener('click', () => {
+      subtabEdit.classList.add('active');
+      subtabAssign.classList.remove('active');
+      subpaneEdit.style.display = 'block';
+      subpaneAssign.style.display = 'none';
+      renderRoleEditorList();
+    });
+
+    subtabAssign.addEventListener('click', () => {
+      subtabAssign.classList.add('active');
+      subtabEdit.classList.remove('active');
+      subpaneAssign.style.display = 'block';
+      subpaneEdit.style.display = 'none';
+      renderRoleAssignmentList();
+    });
+  }
+
+  // 새 역할 추가
+  if (btnAddNewRole) {
+    btnAddNewRole.addEventListener('click', () => {
+      currentRoleEditList.push({
+        id: `role-${Date.now()}`,
+        name: '새 역할',
+        icon: '⭐',
+        desc: '쉬는 시간 및 담당 활동을 입력해 주세요.'
+      });
+      renderRoleEditorList();
+      showToast('새 역할 항목이 추가되었습니다. 내용을 입력해 주세요.', 'info');
+    });
+  }
+
+  // 추천 기본 20개 역할로 복원
+  if (btnResetDefaultRoles) {
+    btnResetDefaultRoles.addEventListener('click', () => {
+      if (confirm('추천 기본 20개 역할 목록으로 되돌릴까요?')) {
+        currentRoleEditList = JSON.parse(JSON.stringify(INITIAL_ROLES));
+        renderRoleEditorList();
+        showToast('기본 추천 20개 역할로 복원되었습니다. [역할 수정사항 저장]을 눌러 적용하세요.', 'info');
+      }
+    });
+  }
+
+  // 역할 수정사항 저장
+  if (btnSaveRoleEdits) {
+    btnSaveRoleEdits.addEventListener('click', () => {
+      // 폼 입력값들을 currentRoleEditList에 동기화
+      const rows = document.querySelectorAll('#role-editor-list .role-editor-item');
+      const updatedRoles = [];
+
+      rows.forEach(row => {
+        const id = row.dataset.roleId;
+        const iconInput = row.querySelector('.input-role-icon');
+        const nameInput = row.querySelector('.input-role-name');
+        const descInput = row.querySelector('.input-role-desc');
+
+        const icon = (iconInput ? iconInput.value : '').trim() || '⭐';
+        const name = (nameInput ? nameInput.value : '').trim() || '학급 역할';
+        const desc = (descInput ? descInput.value : '').trim() || '학급을 위한 멋진 활동하기';
+
+        updatedRoles.push({ id, icon, name, desc });
+      });
+
+      if (updatedRoles.length === 0) {
+        showToast('최소 1개 이상의 역할이 필요합니다.', 'warning');
+        return;
+      }
+
+      state.roles = updatedRoles;
+      currentRoleEditList = JSON.parse(JSON.stringify(updatedRoles));
+      saveState(state);
+
+      showToast(`📋 ${state.roles.length}개의 1인 1역할 정보가 저장되었습니다!`, 'success');
+      renderTeacherDashboard();
+      renderRoleAssignmentList();
+    });
+  }
+
+  // 랜덤 자동 배정
+  if (btnShuffle) {
+    btnShuffle.addEventListener('click', () => {
+      const shuffledRoles = [...state.roles].sort(() => Math.random() - 0.5);
+      const selects = document.querySelectorAll('#role-assignment-list select[data-student-id]');
+
+      selects.forEach((sel, index) => {
+        const assignedRole = shuffledRoles[index % shuffledRoles.length];
+        if (assignedRole) {
+          sel.value = assignedRole.id;
+        }
+      });
+
+      showToast('🎲 역할이 학생들에게 랜덤 배정되었습니다. [배정 내용 저장]을 눌러주세요!', 'info');
+    });
+  }
+
+  // 학생 배정 저장
+  if (btnSaveAssignments) {
+    btnSaveAssignments.addEventListener('click', () => {
+      const selects = document.querySelectorAll('#role-assignment-list select[data-student-id]');
+      selects.forEach(sel => {
+        const sId = sel.dataset.studentId;
+        const student = state.students.find(s => s.id === sId);
+        if (student) {
+          student.roleId = sel.value;
+          student.roleCompleted = false;
+        }
+      });
+
+      saveState(state);
+      closeModal('modal-role-assign');
+      fireConfetti({ count: 70 });
+      showToast('📋 이번 주 1인 1역 학생 배정이 저장되었습니다!', 'success');
+      renderTeacherDashboard();
+    });
+  }
+}
+
+function renderRoleEditorList() {
+  const container = document.getElementById('role-editor-list');
+  if (!container) return;
+
+  container.innerHTML = '';
+  currentRoleEditList.forEach((role, idx) => {
+    const row = document.createElement('div');
+    row.className = 'role-editor-item';
+    row.dataset.roleId = role.id;
+    row.innerHTML = `
+      <span style="font-size: 13px; font-weight: 800; color: #64748B; width: 24px;">${idx + 1}.</span>
+      <input type="text" class="form-input input-role-icon" value="${role.icon || '⭐'}" style="width: 48px; text-align: center; font-size: 18px; padding: 6px 4px;" title="이모지">
+      <input type="text" class="form-input input-role-name" value="${role.name || ''}" style="width: 140px; font-weight: 800; padding: 6px 10px;" placeholder="역할 이름">
+      <input type="text" class="form-input input-role-desc" value="${role.desc || ''}" style="flex: 1; padding: 6px 10px;" placeholder="구체적인 할 일 안내">
+      <button type="button" class="btn btn-outline btn-sm btn-delete-role" style="color: #DC2626; border-color: #FCA5A5; padding: 6px 10px;" title="이 역할 삭제">🗑️</button>
+    `;
+
+    row.querySelector('.btn-delete-role').addEventListener('click', () => {
+      if (confirm(`'${role.name}' 역할을 목록에서 삭제할까요?`)) {
+        currentRoleEditList = currentRoleEditList.filter(r => r.id !== role.id);
+        renderRoleEditorList();
+        showToast('역할이 삭제되었습니다. 저장을 눌러 적용하세요.', 'info');
       }
     });
 
-    showToast('🎲 20개의 역할이 학생들에게 랜덤 배정되었습니다. 저장을 눌러주세요!', 'info');
-  });
-
-  saveBtn.addEventListener('click', () => {
-    const selects = listContainer.querySelectorAll('select[data-student-id]');
-    selects.forEach(sel => {
-      const sId = sel.dataset.studentId;
-      const student = state.students.find(s => s.id === sId);
-      if (student) {
-        student.roleId = sel.value;
-        student.roleCompleted = false;
-      }
-    });
-
-    saveState(state);
-    closeModal('modal-role-assign');
-    showToast('📋 이번 주 1인 1역 배정이 저장되었습니다!', 'success');
-    renderTeacherDashboard();
+    container.appendChild(row);
   });
 }
 
+function renderRoleAssignmentList() {
+  const listContainer = document.getElementById('role-assignment-list');
+  if (!listContainer) return;
+
+  listContainer.innerHTML = '';
+
+  state.students.forEach(student => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #FFFFFF; border: 1.5px solid #E2E8F0; padding: 8px 12px; border-radius: 10px;';
+
+    const left = document.createElement('div');
+    left.style.cssText = 'display: flex; align-items: center; gap: 8px; font-weight: 700;';
+    left.innerHTML = `
+      <span style="font-size: 11px; color: #64748B; background: #F1F5F9; padding: 2px 6px; border-radius: 99px;">${student.no}번</span>
+      <span style="font-size: 20px;">${student.avatar}</span>
+      <span style="color: #1E293B;">${student.name}</span>
+    `;
+
+    const select = document.createElement('select');
+    select.className = 'form-select';
+    select.dataset.studentId = student.id;
+    select.style.cssText = 'max-width: 320px; padding: 6px 10px; font-size: 13px;';
+
+    state.roles.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.id;
+      opt.textContent = `${r.icon} ${r.name}`;
+      if (r.id === student.roleId) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    row.appendChild(left);
+    row.appendChild(select);
+    listContainer.appendChild(row);
+  });
+}
+
+// ================= 9. 상점 물품 관리 모달 =================
 function initShopManageModal() {
   const openBtn = document.getElementById('btn-open-shop-manage');
   const listContainer = document.getElementById('shop-manage-list');
   const addForm = document.getElementById('form-add-shop-item');
 
-  openBtn.addEventListener('click', () => {
-    renderShopManageList();
-    openModal('modal-shop-manage');
-  });
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      renderShopManageList();
+      openModal('modal-shop-manage');
+    });
+  }
 
   function renderShopManageList() {
     listContainer.innerHTML = '';
@@ -965,7 +1270,7 @@ function initShopManageModal() {
               </span>
             </div>
             <div style="font-size: 12px; color: #64748B;">
-              가격: <b style="color: #D97706;">🪙 ${item.price} 미소</b> | 재고: <b>${item.stock}개</b>
+              가격: <b style="color: #D97706;">🪙 ${item.price} 스마일</b> | 재고: <b>${item.stock}개</b>
             </div>
           </div>
         </div>
@@ -985,123 +1290,125 @@ function initShopManageModal() {
     });
   }
 
-  addForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('input-item-name').value.trim();
-    const icon = document.getElementById('input-item-icon').value.trim() || '🎁';
-    const category = document.getElementById('select-item-category').value;
-    const price = parseInt(document.getElementById('input-item-price').value, 10) || 100;
-    const stock = parseInt(document.getElementById('input-item-stock').value, 10) || 5;
-    const desc = document.getElementById('input-item-desc').value.trim();
+  if (addForm) {
+    addForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('input-item-name').value.trim();
+      const icon = document.getElementById('input-item-icon').value.trim() || '🎁';
+      const category = document.getElementById('select-item-category').value;
+      const price = parseInt(document.getElementById('input-item-price').value, 10) || 100;
+      const stock = parseInt(document.getElementById('input-item-stock').value, 10) || 5;
+      const desc = document.getElementById('input-item-desc').value.trim();
 
-    state.shopItems.push({
-      id: `item-${Date.now()}`,
-      name,
-      category,
-      icon,
-      price,
-      stock,
-      desc
+      state.shopItems.push({
+        id: `item-${Date.now()}`,
+        name,
+        category,
+        icon,
+        price,
+        stock,
+        desc
+      });
+
+      saveState(state);
+      addForm.reset();
+      renderShopManageList();
+      showToast(`🛍️ 새 품목 [${name}]이 상점에 등록되었습니다!`, 'success');
     });
-
-    saveState(state);
-    addForm.reset();
-    renderShopManageList();
-    showToast(`🛍️ 새 품목 [${name}]이 상점에 등록되었습니다!`, 'success');
-  });
+  }
 }
 
+// ================= 10. 오늘의 미션 관리 모달 =================
 function initMissionManageModal() {
   const openBtn = document.getElementById('btn-open-mission-manage');
   const listContainer = document.getElementById('mission-manage-list');
   const addForm = document.getElementById('form-add-mission');
 
-  openBtn.addEventListener('click', () => {
-    renderMissionManageList();
-    openModal('modal-mission-manage');
-  });
-
-  function renderMissionManageList() {
-    listContainer.innerHTML = '';
-    state.missions.forEach(m => {
-      const item = document.createElement('div');
-      item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 14px; border-radius: 8px;';
-      item.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 20px;">${m.icon}</span>
-          <div>
-            <div style="font-weight: 700; font-size: 14px;">${m.title}</div>
-            <div style="font-size: 11px; color: #64748B;">보상: +${m.rewardSmiles}😊, +${m.rewardCoins}🪙</div>
-          </div>
-        </div>
-        <button type="button" class="btn btn-outline btn-sm" style="color: #DC2626; border-color: #FECACA;" data-delete-mission="${m.id}">삭제</button>
-      `;
-
-      item.querySelector('[data-delete-mission]').addEventListener('click', () => {
-        state.missions = state.missions.filter(x => x.id !== m.id);
-        saveState(state);
-        renderMissionManageList();
-        showToast('미션이 삭제되었습니다.', 'info');
-      });
-
-      listContainer.appendChild(item);
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      renderMissionManageList();
+      openModal('modal-mission-manage');
     });
   }
 
-  addForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('input-mission-title').value.trim();
-    const icon = document.getElementById('input-mission-icon').value.trim() || '✨';
-    const rewardSmiles = parseInt(document.getElementById('input-mission-smiles').value, 10) || 2;
-    const rewardCoins = parseInt(document.getElementById('input-mission-coins').value, 10) || 10;
+  function renderMissionManageList() {
+    listContainer.innerHTML = '';
 
-    state.missions.push({
-      id: `mission-${Date.now()}`,
-      title,
-      icon,
-      rewardSmiles,
-      rewardCoins
+    state.missions.forEach(mission => {
+      const card = document.createElement('div');
+      card.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1.5px solid #E2E8F0; padding: 10px 14px; border-radius: 10px;';
+      card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 22px;">${mission.icon}</span>
+          <div>
+            <div style="font-weight: 800; font-size: 14px; color: #1E293B;">${mission.title}</div>
+            <div style="font-size: 12px; color: #64748B;">
+              보상: <span style="color: #4F46E5; font-weight: 700;">+${mission.rewardExp || 2}⭐ 레벨</span>, 
+              <span style="color: #D97706; font-weight: 700;">+${mission.rewardCoins || 10}🪙 스마일</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" style="color: #DC2626; border-color: #FCA5A5;" data-del-mission="${mission.id}">삭제</button>
+      `;
+
+      card.querySelector('[data-del-mission]').addEventListener('click', () => {
+        if (confirm(`'${mission.title}' 미션을 삭제할까요?`)) {
+          state.missions = state.missions.filter(m => m.id !== mission.id);
+          saveState(state);
+          renderMissionManageList();
+          showToast('미션이 삭제되었습니다.', 'info');
+        }
+      });
+
+      listContainer.appendChild(card);
     });
+  }
 
-    saveState(state);
-    addForm.reset();
-    renderMissionManageList();
-    showToast('새로운 학급 미션이 등록되었습니다!', 'success');
-  });
+  if (addForm) {
+    addForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('input-mission-title').value.trim();
+      const icon = document.getElementById('input-mission-icon').value.trim() || '✨';
+      const rewardExp = parseInt(document.getElementById('input-mission-smiles').value, 10) || 2;
+      const rewardCoins = parseInt(document.getElementById('input-mission-coins').value, 10) || 10;
+
+      state.missions.push({
+        id: `mission-${Date.now()}`,
+        title,
+        icon,
+        rewardExp,
+        rewardCoins
+      });
+
+      saveState(state);
+      addForm.reset();
+      renderMissionManageList();
+      showToast(`🎯 새 미션 [${title}]이 등록되었습니다!`, 'success');
+    });
+  }
 }
 
-function initResetDataBtn() {
+// ================= 11. 데이터 초기화 버튼 =================
+function initResetDataButton() {
   const btn = document.getElementById('btn-reset-data');
+  if (!btn) return;
+
   btn.addEventListener('click', () => {
-    if (confirm('모든 학생의 화폐, 스마일, 상점 및 신청 내역을 초기 기본값으로 되돌릴까요?')) {
+    if (confirm('정말로 학급 데이터를 초기 샘플 데이터로 복원하시겠습니까? (현재 변경사항이 모두 리셋됩니다)')) {
       state = resetState();
-      populateStudentSelect();
-      setAppView('teacher');
-      showToast('기본 데이터로 초기화되었습니다.', 'info');
+      updateAppView();
+      showToast('🔄 모든 데이터가 초기 상태로 안전하게 복원되었습니다.', 'info');
     }
   });
 }
 
-function initCardApprovalScroll() {
-  const card = document.getElementById('card-pending-approvals');
-  if (!card) return;
-  card.addEventListener('click', () => {
-    const banner = document.getElementById('section-approval-banner');
-    if (banner && banner.style.display !== 'none') {
-      banner.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      showToast('현재 대기 중인 상점 구매 신청이 없습니다.', 'info');
-    }
-  });
-}
-
-// ================= 7. 학생 개인 화면 렌더링 =================
+// ================= 12. 학생 개인 화면 렌더링 =================
 function renderStudentDashboard(studentId) {
   const student = state.students.find(s => s.id === studentId);
   if (!student) return;
 
   const role = state.roles.find(r => r.id === student.roleId) || { name: '미배정', icon: '❓', desc: '역할을 준비 중입니다.' };
-  const levelInfo = calculateLevel(student.smiles);
+  const levelInfo = calculateLevel(student.exp);
 
   document.getElementById('hero-student-avatar').textContent = student.avatar;
   const levelBadge = document.getElementById('hero-student-level-badge');
@@ -1111,11 +1418,11 @@ function renderStudentDashboard(studentId) {
   document.getElementById('hero-student-name').textContent = student.name;
   document.getElementById('hero-role-name').textContent = role.name;
   document.getElementById('hero-role-desc').textContent = role.desc || '';
-  document.getElementById('hero-coins-val').innerHTML = `${student.coins.toLocaleString()} <span style="font-size: 18px;">미소</span>`;
-  document.getElementById('hero-smiles-val').innerHTML = `${student.smiles} <span style="font-size: 18px;">점</span>`;
+  document.getElementById('hero-coins-val').innerHTML = `${student.coins.toLocaleString()} <span style="font-size: 18px;">스마일</span>`;
+  document.getElementById('hero-smiles-val').innerHTML = `${student.exp} <span style="font-size: 18px;">점</span>`;
 
-  document.getElementById('hero-smiles-label').textContent = `😊 내 스마일: ${student.smiles}점 (${levelInfo.name})`;
-  document.getElementById('hero-smiles-next').textContent = levelInfo.isMaxLevel ? '최고 레벨 도달! 👑' : `다음 레벨까지 ${levelInfo.remainingSmiles}점 남음!`;
+  document.getElementById('hero-smiles-label').textContent = `⭐ 내 레벨 포인트: ${student.exp}점 (${levelInfo.name})`;
+  document.getElementById('hero-smiles-next').textContent = levelInfo.isMaxLevel ? '최고 레벨 도달! 👑' : `다음 레벨까지 ${levelInfo.remainingExp}점 남음!`;
   const bar = document.getElementById('hero-smiles-bar');
   bar.style.width = `${levelInfo.progressPercent}%`;
   bar.style.background = levelInfo.color;
@@ -1167,13 +1474,13 @@ function renderStudentRoleTask(student, role) {
     completeBtn.disabled = true;
   } else {
     completeBtn.className = 'role-complete-btn incomplete';
-    completeText.textContent = '오늘의 1인 1역 실천 완료하기! (+10🪙, +2😊)';
+    completeText.textContent = '오늘의 1인 1역 실천 완료하기! (+10🪙 스마일, +2⭐ 레벨)';
     completeBtn.disabled = false;
 
     completeBtn.onclick = () => {
       student.roleCompleted = true;
       student.coins += 10;
-      student.smiles += 2;
+      student.exp += 2;
 
       state.activityLogs.unshift({
         id: `log-${Date.now()}`,
@@ -1181,7 +1488,7 @@ function renderStudentRoleTask(student, role) {
         type: 'grant',
         target: student.name,
         coins: 10,
-        smiles: 2,
+        exp: 2,
         reason: `1인 1역 [${role.name}] 당일 실천 완료`
       });
 
@@ -1214,39 +1521,40 @@ function renderStudentMissions(student) {
         <span class="mission-title">${mission.title}</span>
       </div>
       <div class="mission-rewards">
-        <span class="reward-tag smile">+${mission.rewardSmiles}😊</span>
-        <span class="reward-tag coin">+${mission.rewardCoins}🪙</span>
+        <span class="reward-tag smile">+${mission.rewardExp || 2}⭐</span>
+        <span class="reward-tag coin">+${mission.rewardCoins || 10}🪙</span>
       </div>
     `;
 
-    item.onclick = () => {
-      const nowChecked = !isChecked;
-      myMissions[mission.id] = nowChecked;
+    item.addEventListener('click', () => {
+      const currentVal = !myMissions[mission.id];
+      myMissions[mission.id] = currentVal;
 
-      if (nowChecked) {
-        student.coins += mission.rewardCoins;
-        student.smiles += mission.rewardSmiles;
+      if (currentVal) {
+        student.exp += (mission.rewardExp || 2);
+        student.coins += (mission.rewardCoins || 10);
 
         state.activityLogs.unshift({
           id: `log-${Date.now()}`,
           timestamp: new Date().toISOString(),
           type: 'grant',
           target: student.name,
-          coins: mission.rewardCoins,
-          smiles: mission.rewardSmiles,
-          reason: `미션 달성 [${mission.title}]`
+          coins: mission.rewardCoins || 10,
+          exp: mission.rewardExp || 2,
+          reason: `일일 미션 [${mission.title}] 완료`
         });
 
         fireConfetti({ count: 50 });
-        showToast(`✨ '${mission.title}' 미션을 완료했습니다!`, 'success');
+        showToast(`🎯 미션 완료! 레벨 +${mission.rewardExp || 2}⭐, 스마일 +${mission.rewardCoins || 10}🪙 획득!`, 'success');
       } else {
-        student.coins = Math.max(0, student.coins - mission.rewardCoins);
-        student.smiles = Math.max(0, student.smiles - mission.rewardSmiles);
+        student.exp = Math.max(0, student.exp - (mission.rewardExp || 2));
+        student.coins = Math.max(0, student.coins - (mission.rewardCoins || 10));
+        showToast('미션 체크를 해제했습니다.', 'info');
       }
 
       saveState(state);
       renderStudentDashboard(student.id);
-    };
+    });
 
     container.appendChild(item);
   });
@@ -1254,165 +1562,156 @@ function renderStudentMissions(student) {
 
 function renderStudentShop(student) {
   const grid = document.getElementById('student-shop-grid');
-  const statusChips = document.getElementById('student-pending-status-chips');
+  const chipsContainer = document.getElementById('student-pending-status-chips');
   grid.innerHTML = '';
-  statusChips.innerHTML = '';
+  chipsContainer.innerHTML = '';
 
   const myRequests = state.purchaseRequests.filter(r => r.studentId === student.id);
-  const pendingCount = myRequests.filter(r => r.status === 'pending').length;
-  const approvedCount = myRequests.filter(r => r.status === 'approved').length;
 
-  statusChips.innerHTML = `
-    <span style="font-size: 13px; font-weight: 700; background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: 99px;">
-      ⏳ 승인 대기중: ${pendingCount}건
-    </span>
-    <span style="font-size: 13px; font-weight: 700; background: #D1FAE5; color: #065F46; padding: 4px 10px; border-radius: 99px;">
-      🎟️ 보유 쿠폰/물품: ${approvedCount}개
-    </span>
-  `;
+  if (myRequests.length === 0) {
+    chipsContainer.innerHTML = '<span style="font-size: 13px; color: #94A3B8;">아직 신청한 내역이 없습니다.</span>';
+  } else {
+    myRequests.slice(0, 5).forEach(req => {
+      const chip = document.createElement('span');
+      chip.style.cssText = 'font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 99px; display: inline-flex; align-items: center; gap: 4px;';
+      if (req.status === 'pending') {
+        chip.style.background = '#FEF3C7';
+        chip.style.color = '#B45309';
+        chip.innerHTML = `<span>⏳</span><span>${req.itemName} (승인 대기)</span>`;
+      } else if (req.status === 'approved') {
+        chip.style.background = '#D1FAE5';
+        chip.style.color = '#065F46';
+        chip.innerHTML = `<span>🎟️</span><span>${req.itemName} (보유 중)</span>`;
+      } else {
+        chip.style.background = '#FEE2E2';
+        chip.style.color = '#991B1B';
+        chip.innerHTML = `<span>❌</span><span>${req.itemName} (반려)</span>`;
+      }
+      chipsContainer.appendChild(chip);
+    });
+  }
 
   state.shopItems.forEach(item => {
-    const card = document.createElement('article');
-    card.className = 'shop-card';
-
-    const isPendingThis = state.purchaseRequests.some(r => r.studentId === student.id && r.itemId === item.id && r.status === 'pending');
     const isOutOfStock = item.stock <= 0;
-    const isNotEnoughMoney = student.coins < item.price;
+    const canAfford = student.coins >= item.price;
+    const isPending = myRequests.some(r => r.itemId === item.id && r.status === 'pending');
 
-    let buttonText = '구매 신청하기';
-    let isDisabled = false;
-
-    if (isPendingThis) {
-      buttonText = '⏳ 승인 대기중';
-      isDisabled = true;
-    } else if (isOutOfStock) {
-      buttonText = '품절되었습니다';
-      isDisabled = true;
-    } else if (isNotEnoughMoney) {
-      buttonText = '🪙 잔액 부족';
-      isDisabled = true;
-    }
-
+    const card = document.createElement('article');
+    card.className = `shop-item-card ${isOutOfStock ? 'out-of-stock' : ''}`;
     card.innerHTML = `
-      <span class="shop-card-badge ${item.category}">
-        ${item.category === 'coupon' ? '🎟️ 특권 쿠폰' : '🧸 선물/물건'}
-      </span>
-      <div class="shop-card-icon">${item.icon}</div>
-      <h4 class="shop-card-name">${item.name}</h4>
-      <p class="shop-card-desc">${item.desc}</p>
-
+      <div class="shop-badge ${item.category}">${item.category === 'coupon' ? '쿠폰' : '물건'}</div>
+      <div class="shop-icon">${item.icon}</div>
+      <div class="shop-item-title">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
       <div class="shop-card-footer">
-        <div class="shop-price">🪙 ${item.price.toLocaleString()} 미소</div>
-        <div class="shop-stock">남은 수량: ${item.stock}개</div>
+        <div class="shop-price">🪙 ${item.price.toLocaleString()} 스마일</div>
+        <div class="shop-stock">${isOutOfStock ? '품절' : `남은 수량: ${item.stock}개`}</div>
       </div>
-
-      <button type="button" class="btn-buy" ${isDisabled ? 'disabled' : ''}>
-        ${buttonText}
+      <button type="button" class="btn btn-primary shop-buy-btn" ${isOutOfStock || isPending ? 'disabled' : ''}>
+        ${isPending ? '⏳ 승인 대기 중' : isOutOfStock ? '품절되었습니다' : !canAfford ? '스마일 부족' : '구매 신청하기'}
       </button>
     `;
 
-    if (!isDisabled) {
-      card.querySelector('.btn-buy').onclick = () => {
-        openPurchaseConfirmModal(student, item);
-      };
+    const buyBtn = card.querySelector('.shop-buy-btn');
+    if (!isOutOfStock && !isPending && canAfford) {
+      buyBtn.addEventListener('click', () => openPurchaseConfirmModal(student, item));
     }
 
     grid.appendChild(card);
   });
 }
 
+let pendingPurchaseItem = null;
+let purchasingStudent = null;
+
 function openPurchaseConfirmModal(student, item) {
-  pendingPurchaseItem = { student, item };
+  purchasingStudent = student;
+  pendingPurchaseItem = item;
 
   document.getElementById('confirm-item-icon').textContent = item.icon;
   document.getElementById('confirm-item-name').textContent = item.name;
   document.getElementById('confirm-item-desc').textContent = item.desc;
-  document.getElementById('confirm-item-price').textContent = `${item.price} 미소`;
+  document.getElementById('confirm-item-price').textContent = `${item.price.toLocaleString()} 스마일`;
 
   openModal('modal-purchase-confirm');
 }
 
 function initPurchaseConfirmModal() {
   const submitBtn = document.getElementById('btn-submit-purchase-request');
-  submitBtn.addEventListener('click', () => {
-    if (!pendingPurchaseItem) return;
+  if (!submitBtn) return;
 
-    const { student, item } = pendingPurchaseItem;
+  submitBtn.addEventListener('click', () => {
+    if (!purchasingStudent || !pendingPurchaseItem) return;
 
     state.purchaseRequests.unshift({
       id: `req-${Date.now()}`,
-      studentId: student.id,
-      studentName: student.name,
-      itemId: item.id,
-      itemName: item.name,
-      itemIcon: item.icon,
-      price: item.price,
+      studentId: purchasingStudent.id,
+      studentName: purchasingStudent.name,
+      itemId: pendingPurchaseItem.id,
+      itemName: pendingPurchaseItem.name,
+      itemIcon: pendingPurchaseItem.icon,
+      price: pendingPurchaseItem.price,
       timestamp: new Date().toISOString(),
       status: 'pending'
     });
 
     saveState(state);
     closeModal('modal-purchase-confirm');
-    showToast(`📩 선생님께 [${item.name}] 구매 신청을 보냈습니다! 승인을 기다려주세요.`, 'success');
-    renderStudentDashboard(student.id);
+    fireConfetti({ count: 60 });
+    showToast(`🛍️ 선생님께 [${pendingPurchaseItem.name}] 구매 신청을 보냈습니다!`, 'success');
+    renderStudentDashboard(purchasingStudent.id);
   });
 }
 
 function renderStudentHistory(student) {
-  const timeline = document.getElementById('student-history-timeline');
-  timeline.innerHTML = '';
+  const container = document.getElementById('student-history-timeline');
+  container.innerHTML = '';
 
-  const myLogs = state.activityLogs.filter(log => log.target === student.name || log.target.includes('전체'));
+  const myLogs = state.activityLogs.filter(l => l.target === student.name || l.target === '학급 전체 20명');
 
   if (myLogs.length === 0) {
-    timeline.innerHTML = '<div style="text-align: center; color: #94A3B8; padding: 40px;">아직 활동 기록이 없습니다.</div>';
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+        <span style="font-size: 40px; display: block; margin-bottom: 8px;">📜</span>
+        아직 기록된 활동 내역이 없습니다.
+      </div>
+    `;
     return;
   }
 
   myLogs.forEach(log => {
+    const timeFormatted = new Date(log.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    const isPositiveCoin = log.coins > 0;
+    const isNegativeCoin = log.coins < 0;
+
     const item = document.createElement('div');
     item.className = 'timeline-item';
-
-    const isPlus = log.coins >= 0;
-    const dateFormatted = new Date(log.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-
     item.innerHTML = `
-      <div class="timeline-left">
-        <div class="timeline-icon ${log.type}">
-          ${log.type === 'grant' ? '🎁' : log.type === 'shop' ? '🛍️' : '➖'}
+      <div class="timeline-dot ${log.type}"></div>
+      <div class="timeline-time">${timeFormatted}</div>
+      <div class="timeline-content">
+        <h4>${log.reason}</h4>
+        <div class="timeline-diff">
+          ${log.exp ? `<span style="color: #4F46E5; font-weight: 800;">⭐ 레벨 +${log.exp}점</span>` : ''}
+          ${isPositiveCoin ? `<span style="color: #D97706; font-weight: 800;">🪙 +${log.coins} 스마일</span>` : ''}
+          ${isNegativeCoin ? `<span style="color: #DC2626; font-weight: 800;">🪙 ${log.coins} 스마일</span>` : ''}
         </div>
-        <div class="timeline-details">
-          <h4>${log.reason}</h4>
-          <p>${dateFormatted} · ${log.smiles > 0 ? `+${log.smiles}😊 스마일 획득` : '화폐 변동'}</p>
-        </div>
-      </div>
-      <div class="timeline-right ${isPlus ? 'plus' : 'minus'}">
-        ${isPlus ? `+${log.coins}` : log.coins} 🪙
       </div>
     `;
 
-    timeline.appendChild(item);
+    container.appendChild(item);
   });
 }
 
-// ================= 앱 초기화 실행 =================
-function initApp() {
+// ================= 13. DOM 로드 완료 후 전체 초기화 =================
+document.addEventListener('DOMContentLoaded', () => {
   initModalEvents();
-  initModeSwitcher();
+  initAuthAndViews();
   initGrantDeductForm();
-  initBatchGrantForm();
+  initBatchGrantModal();
   initRoleAssignModal();
   initShopManageModal();
   initMissionManageModal();
   initPurchaseConfirmModal();
-  initResetDataBtn();
-  initCardApprovalScroll();
-
-  setAppView(state.currentView || 'teacher');
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
+  initResetDataButton();
+});

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>우리 반 경제교실 & 스마일 성장 시스템 | 3학년 1반</title>
-  <meta name="description" content="초등학교 3학년 맞춤형 학급화폐 및 스마일 게이미피케이션 학급관리 웹 애플리케이션입니다. 화폐 지급, 스마일 레벨업, 1인 1역, 학급 상점 승인 기능을 제공합니다.">
-  <meta name="keywords" content="학급경영, 학급화폐, 게이미피케이션, 초등학교 3학년, 1인 1역, 학급상점">
+  <title>우리 반 경제 놀이터 & 레벨 성장 시스템 | 3학년 1반</title>
+  <meta name="description" content="초등학교 3학년 맞춤형 학급화폐(스마일) 및 레벨 게이미피케이션 학급관리 웹 애플리케이션입니다. 학생/교사 개별 로그인, 1인 1역 커스텀 수정, 학급 상점 승인 기능을 제공합니다.">
+  <meta name="keywords" content="학급경영, 학급화폐, 스마일, 게이미피케이션, 초등학교 3학년, 1인 1역, 학급상점, 학생로그인">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
   <!-- 글로벌 헤더 -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand" id="brand-logo" title="처음으로 이동">
+      <div class="brand" id="brand-logo" title="처음 화면으로">
         <div class="brand-icon">🌟</div>
         <div class="brand-title">
           <span>우리 반 경제 놀이터</span>
@@ -28,18 +28,17 @@
         </div>
       </div>
 
-      <!-- 모드 전환 (교사 모드 vs 학생 모드) -->
-      <nav class="mode-switcher" aria-label="사용자 모드 전환">
-        <button type="button" class="mode-btn teacher-mode active" id="btn-mode-teacher" aria-label="교사 모드로 전환">
-          <span>👩‍🏫</span>
-          <span>선생님 화면</span>
-        </button>
-
-        <div class="student-select-box" id="student-select-container">
-          <span id="student-avatar-icon">🎒</span>
-          <select id="select-active-student" aria-label="학생 선택"></select>
+      <!-- 사용자 세션 & 로그인 상태 바 -->
+      <div class="user-session-bar" id="user-session-bar">
+        <div class="user-badge-pill" id="session-user-badge">
+          <span>🔒</span>
+          <span>로그인이 필요합니다</span>
         </div>
-      </nav>
+        <button type="button" class="btn-logout" id="btn-logout" style="display: none;" title="로그아웃하고 로그인 화면으로">
+          <span>🚪</span>
+          <span>로그아웃</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -47,8 +46,57 @@
   <main class="app-main" id="main-content">
     <h1 class="visually-hidden" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">우리 반 학급경영 및 경제 게이미피케이션</h1>
 
+    <!-- 0. 학생/교사 분리 로그인 포털 뷰 -->
+    <div id="view-login" class="view-panel">
+      <section class="login-section">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="login-header-icon">🌟</div>
+            <h2>우리 반 경제 놀이터</h2>
+            <p>3학년 1반 친구들과 선생님, 로그인해 주세요!</p>
+          </div>
+
+          <!-- 교사 / 학생 로그인 탭 전환 -->
+          <div class="login-nav-tabs">
+            <button type="button" class="login-tab-btn student-tab active" id="tab-login-student">
+              <span>🎒</span>
+              <span>학생 로그인 (20명)</span>
+            </button>
+            <button type="button" class="login-tab-btn teacher-tab" id="tab-login-teacher">
+              <span>👩‍🏫</span>
+              <span>선생님 로그인</span>
+            </button>
+          </div>
+
+          <!-- 🎒 학생 로그인 패널 -->
+          <div id="panel-login-student" class="student-login-box">
+            <div class="student-login-guide">
+              👇 <b>내 번호와 이름</b>을 클릭하면 바로 입장합니다!
+            </div>
+            <div class="student-login-grid" id="student-login-grid-container"></div>
+          </div>
+
+          <!-- 👩‍🏫 교사 로그인 패널 -->
+          <div id="panel-login-teacher" class="teacher-login-box" style="display: none;">
+            <form id="form-teacher-login">
+              <div class="form-group" style="text-align: left;">
+                <label class="form-label" for="input-teacher-pw" style="text-align: center; display: block;">선생님 비밀번호</label>
+                <input type="password" id="input-teacher-pw" class="form-input" placeholder="비밀번호 입력" autocomplete="current-password" autofocus>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px; text-align: center;">
+                  💡 초기 기본 비밀번호: <b>0000</b>
+                </p>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px; font-weight: 800;">
+                👩‍🏫 선생님 대시보드 입장하기
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <!-- 1. 교사 대시보드 뷰 -->
-    <div id="view-teacher" class="view-panel">
+    <div id="view-teacher" class="view-panel" style="display: none;">
       <!-- 학급 요약 현황 통계 -->
       <section class="dashboard-header" aria-labelledby="section-stats-title">
         <h2 id="section-stats-title" class="visually-hidden">학급 현황 요약</h2>
@@ -65,14 +113,14 @@
             <div class="stat-icon-wrap coins">🪙</div>
             <div class="stat-info">
               <h3>학급 총 유통 화폐</h3>
-              <div class="stat-value" id="stat-total-coins">0 미소</div>
+              <div class="stat-value" id="stat-total-coins">0 스마일</div>
             </div>
           </article>
 
           <article class="stat-card">
-            <div class="stat-icon-wrap smiles">😊</div>
+            <div class="stat-icon-wrap smiles">⭐</div>
             <div class="stat-info">
-              <h3>총 적립 스마일</h3>
+              <h3>학급 누적 레벨 포인트</h3>
               <div class="stat-value" id="stat-total-smiles">0 점</div>
             </div>
           </article>
@@ -105,7 +153,7 @@
           </button>
           <button type="button" class="btn btn-primary" id="btn-open-role-assign">
             <span>📋</span>
-            <span>1인 1역 주간 배정</span>
+            <span>1인 1역 관리 및 배정</span>
           </button>
           <button type="button" class="btn btn-secondary" id="btn-open-shop-manage">
             <span>🛍️</span>
@@ -122,14 +170,14 @@
         </div>
       </section>
 
-      <!-- 상점 승인 대기 배너 (있을 때만 표시) -->
+      <!-- 상점 승인 대기 배너 (신청 건이 있을 때만 표시) -->
       <section class="approval-banner" id="section-approval-banner" style="display: none;" aria-labelledby="approval-title">
         <div class="approval-banner-header">
           <div class="approval-banner-title" id="approval-title">
             <span>🔔</span>
             <span>학생들의 상점 구매 신청이 도착했습니다!</span>
           </div>
-          <span style="font-size: 13px; color: #B91C1C; font-weight: 700;">승인 시 화폐가 자동 차감됩니다.</span>
+          <span style="font-size: 13px; color: #B91C1C; font-weight: 700;">승인 시 화폐(스마일)가 자동 차감됩니다.</span>
         </div>
         <div class="approval-list" id="approval-list-container"></div>
       </section>
@@ -142,7 +190,7 @@
             <span>3학년 1반 친구들 (20명)</span>
           </h2>
           <span style="font-size: 14px; color: var(--text-secondary); font-weight: 600;">
-            학생 카드를 클릭하여 화폐와 스마일을 지급하세요
+            학생 카드를 클릭하여 화폐(스마일)와 레벨 포인트를 지급하세요
           </span>
         </div>
         <div class="students-grid" id="students-grid-container"></div>
@@ -151,6 +199,12 @@
 
     <!-- 2. 학생 개인 화면 뷰 -->
     <div id="view-student" class="view-panel" style="display: none;">
+      <!-- 교사 미리보기 모드일 때 복귀 배너 -->
+      <div class="preview-return-banner" id="banner-teacher-preview" style="display: none;">
+        <span>👩‍🏫 <b>선생님 미리보기 모드</b>로 학생 화면을 열람 중입니다.</span>
+        <button type="button" id="btn-return-teacher-view">◀ 선생님 화면으로 복귀</button>
+      </div>
+
       <!-- 학생 프로필 히어로 영역 -->
       <section class="student-hero" id="student-hero-banner" aria-label="내 정보 요약">
         <div class="student-hero-avatar-wrap">
@@ -170,11 +224,11 @@
             쉬는 시간마다 칠판을 깨끗하게 닦고 분필 가루 털기
           </p>
 
-          <!-- 스마일 진행 바 -->
+          <!-- 레벨 진행 바 -->
           <div style="max-width: 440px;">
             <div class="progress-meta">
-              <span id="hero-smiles-label">😊 내 스마일: 55개</span>
-              <span id="hero-smiles-next">다음 레벨까지 45개 남음!</span>
+              <span id="hero-smiles-label">⭐ 내 레벨 포인트: 55점</span>
+              <span id="hero-smiles-next">다음 레벨까지 45점 남음!</span>
             </div>
             <div class="progress-bar-bg">
               <div class="progress-bar-fill" id="hero-smiles-bar" style="width: 55%;"></div>
@@ -185,10 +239,10 @@
         <div class="hero-balance-cards">
           <div class="hero-card gold">
             <span class="hero-card-label">🪙 내 보유 화폐</span>
-            <span class="hero-card-val" id="hero-coins-val">250 <span style="font-size: 18px;">미소</span></span>
+            <span class="hero-card-val" id="hero-coins-val">250 <span style="font-size: 18px;">스마일</span></span>
           </div>
           <div class="hero-card smile">
-            <span class="hero-card-label">😊 누적 스마일</span>
+            <span class="hero-card-label">⭐ 누적 레벨 포인트</span>
             <span class="hero-card-val" id="hero-smiles-val">55 <span style="font-size: 18px;">점</span></span>
           </div>
         </div>
@@ -264,7 +318,7 @@
 
   <!-- ================= 모달 팝업 모음 ================= -->
 
-  <!-- 1. 화폐/스마일 지급 및 차감 모달 -->
+  <!-- 1. 화폐/레벨 포인트 지급 및 차감 모달 -->
   <div class="modal-overlay" id="modal-grant-deduct">
     <div class="modal-content">
       <div class="modal-header">
@@ -285,11 +339,11 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
           <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" for="input-grant-coins">🪙 학급 화폐 (미소)</label>
+            <label class="form-label" for="input-grant-coins">🪙 학급 화폐 (스마일)</label>
             <input type="number" id="input-grant-coins" class="form-input" min="0" step="5" value="20">
           </div>
           <div class="form-group" style="margin-bottom: 0;" id="group-grant-smiles">
-            <label class="form-label" for="input-grant-smiles">😊 스마일</label>
+            <label class="form-label" for="input-grant-smiles">⭐ 레벨 포인트 (경험치)</label>
             <input type="number" id="input-grant-smiles" class="form-input" min="0" step="1" value="3">
           </div>
         </div>
@@ -319,15 +373,15 @@
       </div>
       <form id="form-batch-grant">
         <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
-          모든 학생에게 공평하게 화폐와 스마일을 선물합니다. (예: 학급 회의 보너스, 단체 줄넘기 성공 등)
+          모든 학생에게 공평하게 화폐(스마일)와 레벨 포인트를 선물합니다. (예: 학급 회의 보너스, 단체 줄넘기 성공 등)
         </p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
           <div class="form-group">
-            <label class="form-label" for="input-batch-coins">🪙 화폐 지급량 (미소)</label>
+            <label class="form-label" for="input-batch-coins">🪙 화폐 지급량 (스마일)</label>
             <input type="number" id="input-batch-coins" class="form-input" min="0" step="5" value="20" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="input-batch-smiles">😊 스마일 지급량</label>
+            <label class="form-label" for="input-batch-smiles">⭐ 레벨 포인트 지급량</label>
             <input type="number" id="input-batch-smiles" class="form-input" min="0" step="1" value="2" required>
           </div>
         </div>
@@ -343,24 +397,58 @@
     </div>
   </div>
 
-  <!-- 3. 1인 1역 주간 배정 모달 -->
+  <!-- 3. 1인 1역 주간 배정 및 내용 수정 모달 -->
   <div class="modal-overlay" id="modal-role-assign">
-    <div class="modal-content" style="max-width: 680px;">
+    <div class="modal-content" style="max-width: 720px;">
       <div class="modal-header">
         <h3 class="modal-title">
           <span>📋</span>
-          <span>1인 1역 주간 배정 관리</span>
+          <span>1인 1역할 관리 및 주간 배정</span>
         </h3>
         <button type="button" class="btn-close-modal" data-close="modal-role-assign">✕</button>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <p style="font-size: 13px; color: var(--text-secondary);">일주일마다 학생들의 역할을 변경하고 관리할 수 있습니다.</p>
-        <button type="button" class="btn btn-outline btn-sm" id="btn-shuffle-roles">🎲 랜덤 자동 배정</button>
+
+      <!-- 서브 탭: 역할 내용 수정 vs 학생 배정 -->
+      <div class="modal-subtabs">
+        <button type="button" class="modal-subtab-btn active" id="subtab-role-edit">
+          <span>✏️</span>
+          <span>1인 1역할 내용 직접 수정 (편집기)</span>
+        </button>
+        <button type="button" class="modal-subtab-btn" id="subtab-role-assign">
+          <span>👥</span>
+          <span>학생들에게 배정하기</span>
+        </button>
       </div>
-      <div id="role-assignment-list" style="max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-close="modal-role-assign">닫기</button>
-        <button type="button" class="btn btn-primary" id="btn-save-role-assignments">배정 내용 저장</button>
+
+      <!-- 서브패널 1: 역할 목록 및 내용 직접 수정 -->
+      <div id="subpane-role-edit">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;">
+          <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+            우리 반에 맞게 역할 이모지, 이름, 구체적인 할 일을 직접 수정하세요.
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-add-new-role">➕ 새 역할 추가</button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-reset-default-roles" title="추천 기본 20개 역할로 되돌리기">🔄 기본 복원</button>
+          </div>
+        </div>
+        <div id="role-editor-list" style="max-height: 48vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;"></div>
+        <div class="modal-footer" style="margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" data-close="modal-role-assign">닫기</button>
+          <button type="button" class="btn btn-primary" id="btn-save-role-edits">역할 수정사항 저장</button>
+        </div>
+      </div>
+
+      <!-- 서브패널 2: 학생들에게 역할 배정하기 -->
+      <div id="subpane-role-assign" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">수정된 역할을 20명의 학생들에게 주간 배정합니다.</p>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-shuffle-roles">🎲 랜덤 자동 배정</button>
+        </div>
+        <div id="role-assignment-list" style="max-height: 48vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;"></div>
+        <div class="modal-footer" style="margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" data-close="modal-role-assign">닫기</button>
+          <button type="button" class="btn btn-primary" id="btn-save-role-assignments">배정 내용 저장</button>
+        </div>
       </div>
     </div>
   </div>
@@ -398,7 +486,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="input-item-price">가격 (미소)</label>
+              <label class="form-label" for="input-item-price">가격 (스마일)</label>
               <input type="number" id="input-item-price" class="form-input" min="10" step="10" value="100" required>
             </div>
             <div class="form-group">
@@ -429,7 +517,7 @@
       
       <div style="background: #FEF3C7; padding: 12px; border-radius: var(--radius-md); margin-bottom: 20px;">
         <span style="font-size: 13px; color: #92400E; font-weight: 700;">필요 화폐: </span>
-        <span style="font-size: 20px; font-weight: 800; color: #B45309;" id="confirm-item-price">150 미소</span>
+        <span style="font-size: 20px; font-weight: 800; color: #B45309;" id="confirm-item-price">150 스마일</span>
         <div style="font-size: 12px; color: #B45309; margin-top: 4px;">(선생님 승인 완료 시 잔액에서 차감됩니다)</div>
       </div>
 
@@ -457,8 +545,8 @@
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
           <input type="text" id="input-mission-icon" class="form-input" value="✨" title="이모지">
-          <input type="number" id="input-mission-smiles" class="form-input" min="0" value="2" title="스마일 보상">
-          <input type="number" id="input-mission-coins" class="form-input" min="0" value="10" title="화폐 보상">
+          <input type="number" id="input-mission-smiles" class="form-input" min="0" value="2" title="레벨 포인트 보상">
+          <input type="number" id="input-mission-coins" class="form-input" min="0" value="10" title="화폐(스마일) 보상">
         </div>
         <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">미션 추가</button>
       </form>
@@ -472,7 +560,7 @@
   <!-- 토스트 알림 컨테이너 -->
   <div id="toast-container" aria-live="polite"></div>
 
-  <!-- 자바스크립트 로드 (로컬 더블클릭 및 웹서버 모두 호환) -->
+  <!-- 자바스크립트 로드 (로컬 더블클릭 및 웹서버 모두 완벽 호환) -->
   <script src="js/app.js"></script>
 </body>
 </html>

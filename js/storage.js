@@ -4,12 +4,13 @@
 
 import { INITIAL_STUDENTS, INITIAL_ROLES, INITIAL_SHOP_ITEMS, INITIAL_DAILY_MISSIONS, LEVEL_TIERS } from './data.js';
 
-const STORAGE_KEY = 'CLASS_ECONOMY_APP_STATE_V1';
+const STORAGE_KEY = 'CLASS_ECONOMY_APP_STATE_V2';
 
-export function calculateLevel(smiles) {
+export function calculateLevel(exp) {
+  const currentExp = Number(exp) || 0;
   let currentTier = LEVEL_TIERS[0];
   for (let i = LEVEL_TIERS.length - 1; i >= 0; i--) {
-    if (smiles >= LEVEL_TIERS[i].minSmiles) {
+    if (currentExp >= LEVEL_TIERS[i].minExp) {
       currentTier = LEVEL_TIERS[i];
       break;
     }
@@ -17,13 +18,13 @@ export function calculateLevel(smiles) {
 
   const nextTier = LEVEL_TIERS.find(t => t.level === currentTier.level + 1);
   let progressPercent = 100;
-  let remainingSmiles = 0;
+  let remainingExp = 0;
 
   if (nextTier) {
-    const range = nextTier.minSmiles - currentTier.minSmiles;
-    const currentProgress = smiles - currentTier.minSmiles;
+    const range = nextTier.minExp - currentTier.minExp;
+    const currentProgress = currentExp - currentTier.minExp;
     progressPercent = Math.min(100, Math.max(0, Math.round((currentProgress / range) * 100)));
-    remainingSmiles = nextTier.minSmiles - smiles;
+    remainingExp = nextTier.minExp - currentExp;
   }
 
   return {
@@ -32,14 +33,13 @@ export function calculateLevel(smiles) {
     badge: currentTier.badge,
     color: currentTier.color,
     progressPercent,
-    remainingSmiles,
-    nextLevelMinSmiles: nextTier ? nextTier.minSmiles : null,
+    remainingExp,
+    nextLevelMinExp: nextTier ? nextTier.minExp : null,
     isMaxLevel: !nextTier
   };
 }
 
 export function getInitialState() {
-  // 기본 미션 완료 상태 및 활동 내역 초기화
   const studentMissionStatus = {};
   INITIAL_STUDENTS.forEach(s => {
     studentMissionStatus[s.id] = {
@@ -92,7 +92,7 @@ export function getInitialState() {
       type: 'grant',
       target: '김민준',
       coins: 20,
-      smiles: 3,
+      exp: 3,
       reason: '수업 발표 적극 참여'
     },
     {
@@ -101,7 +101,7 @@ export function getInitialState() {
       type: 'grant',
       target: '이서아',
       coins: 30,
-      smiles: 5,
+      exp: 5,
       reason: '1인 1역(우유 급식) 성실 수행'
     },
     {
@@ -110,14 +110,16 @@ export function getInitialState() {
       type: 'shop',
       target: '조은서',
       coins: -60,
-      smiles: 0,
+      exp: 0,
       reason: '상점 구매 승인 [반짝반짝 홀로그램 스티커]'
     }
   ];
 
   return {
-    version: '1.0',
-    currentView: 'teacher', // 'teacher' or studentId (e.g. 's-1')
+    version: '2.0',
+    currentUser: null, // null (login view) | { role: 'teacher' } | { role: 'student', studentId: 's-1' }
+    teacherPin: '0000',
+    previewStudentId: null, // If teacher is previewing student view
     students: INITIAL_STUDENTS,
     roles: INITIAL_ROLES,
     shopItems: INITIAL_SHOP_ITEMS,
@@ -138,6 +140,22 @@ export function loadState() {
       return state;
     }
     const parsed = JSON.parse(raw);
+    
+    // Migration: ensure exp field exists for students if loaded from older storage
+    if (parsed.students) {
+      parsed.students.forEach(s => {
+        if (s.exp === undefined && s.smiles !== undefined) {
+          s.exp = s.smiles;
+        }
+      });
+    }
+    if (!parsed.teacherPin) {
+      parsed.teacherPin = '0000';
+    }
+    if (!parsed.roles || parsed.roles.length === 0) {
+      parsed.roles = INITIAL_ROLES;
+    }
+
     return parsed;
   } catch (err) {
     console.error('Failed to load state from localStorage:', err);

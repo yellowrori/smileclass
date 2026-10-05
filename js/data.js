@@ -1,12 +1,14 @@
 /**
  * 학급관리 웹 앱 초기 데이터 (20명 학생, 1인 1역, 기본 상점 품목, 기본 미션)
+ * 화폐명: '스마일' (🪙)
+ * 성장 지표: '레벨 포인트/EXP' (⭐)
  */
 
 export const INITIAL_ROLES = [
   { id: 'role-1', name: '칠판 지우미', icon: '🧹', desc: '쉬는 시간마다 칠판을 깨끗하게 닦고 분필 가루 털기' },
   { id: 'role-2', name: '우유 급식 도우미', icon: '🥛', desc: '아침 우유 배부하고 남은 우유 상자 정리하기' },
   { id: 'role-3', name: '줄반장', icon: '🚶‍♂️', desc: '급식실 및 이동 수업 갈 때 줄 반듯하게 세우기' },
-  { id: 'role-4', name: '에너지 지킴이', icon: '💡', desc: '교실 비울 때 전등 끄기, 에어컨/히터 온도 관리' },
+  { id: 'role-4', name: '에너지 지킴이', icon: '💡', desc: '교실 비울 때 전등 끄기, 에어컨/히터 전원 관리' },
   { id: 'role-5', name: '도서 도우미', icon: '📚', desc: '학급 문고 책장 정리하고 빌려간 책 제자리에 꽂기' },
   { id: 'role-6', name: '환기 지킴이', icon: '🪟', desc: '중간 놀이 시간 및 점심시간에 창문 열어 환기하기' },
   { id: 'role-7', name: '식물 돌보미', icon: '🌱', desc: '교실 화분에 주기적으로 물 주고 시든 잎 정리하기' },
@@ -22,38 +24,38 @@ export const INITIAL_ROLES = [
   { id: 'role-17', name: '환경 지킴이', icon: '🗑️', desc: '교실 바닥에 떨어진 쓰레기 줍고 정리 솔선수범하기' },
   { id: 'role-18', name: '문단속 도우미', icon: '🔑', desc: '하교 시 교실 앞문과 뒷문 잠겼는지 확인하기' },
   { id: 'role-19', name: '게시판 도우미', icon: '📌', desc: '학급 게시판 작품 및 안내장 가지런히 고정하기' },
-  { id: 'role-20', name: '스마일 알리미', icon: '😊', desc: '하루 시작할 때 친구들에게 밝은 미소로 인사 건네기' }
+  { id: 'role-20', name: '인사 알리미', icon: '😊', desc: '하루 시작할 때 친구들에게 밝은 미소로 반갑게 인사하기' }
 ];
 
 export const LEVEL_TIERS = [
-  { level: 1, name: '새싹 탐험가', minSmiles: 0, maxSmiles: 19, badge: '🌱', color: '#10B981' },
-  { level: 2, name: '성장하는 모험가', minSmiles: 20, maxSmiles: 49, badge: '🌿', color: '#06B6D4' },
-  { level: 3, name: '열정의 열매', minSmiles: 50, maxSmiles: 99, badge: '🍎', color: '#F59E0B' },
-  { level: 4, name: '학급의 달인', minSmiles: 100, maxSmiles: 199, badge: '⭐', color: '#8B5CF6' },
-  { level: 5, name: '스마일 마스터', minSmiles: 200, maxSmiles: 9999, badge: '👑', color: '#EC4899' }
+  { level: 1, name: '새싹 탐험가', minExp: 0, maxExp: 19, badge: '🌱', color: '#10B981' },
+  { level: 2, name: '성장하는 모험가', minExp: 20, maxExp: 49, badge: '🌿', color: '#06B6D4' },
+  { level: 3, name: '열정의 열매', minExp: 50, maxExp: 99, badge: '🍎', color: '#F59E0B' },
+  { level: 4, name: '학급의 달인', minExp: 100, maxExp: 199, badge: '⭐', color: '#8B5CF6' },
+  { level: 5, name: '최고 레벨 마스터', minExp: 200, maxExp: 9999, badge: '👑', color: '#EC4899' }
 ];
 
 export const INITIAL_STUDENTS = [
-  { id: 's-1', no: 1, name: '김민준', avatar: '🦁', coins: 180, smiles: 28, roleId: 'role-1', roleCompleted: false },
-  { id: 's-2', no: 2, name: '이서아', avatar: '🐰', coins: 250, smiles: 55, roleId: 'role-2', roleCompleted: true },
-  { id: 's-3', no: 3, name: '박도윤', avatar: '🐯', coins: 120, smiles: 18, roleId: 'role-3', roleCompleted: false },
-  { id: 's-4', no: 4, name: '정하은', avatar: '🦊', coins: 310, smiles: 72, roleId: 'role-4', roleCompleted: true },
-  { id: 's-5', no: 5, name: '최지호', avatar: '🐼', coins: 150, smiles: 25, roleId: 'role-5', roleCompleted: false },
-  { id: 's-6', no: 6, name: '윤아인', avatar: '🐨', coins: 220, smiles: 44, roleId: 'role-6', roleCompleted: false },
-  { id: 's-7', no: 7, name: '한시우', avatar: '🐶', coins: 190, smiles: 36, roleId: 'role-7', roleCompleted: true },
-  { id: 's-8', no: 8, name: '송지우', avatar: '🐱', coins: 280, smiles: 63, roleId: 'role-8', roleCompleted: false },
-  { id: 's-9', no: 9, name: '강유준', avatar: '🐻', coins: 140, smiles: 22, roleId: 'role-9', roleCompleted: false },
-  { id: 's-10', no: 10, name: '조은서', avatar: '🐸', coins: 300, smiles: 68, roleId: 'role-10', roleCompleted: true },
-  { id: 's-11', no: 11, name: '오민서', avatar: '🦄', coins: 210, smiles: 40, roleId: 'role-11', roleCompleted: false },
-  { id: 's-12', no: 12, name: '배현우', avatar: '🐵', coins: 170, smiles: 30, roleId: 'role-12', roleCompleted: false },
-  { id: 's-13', no: 13, name: '백소율', avatar: '🐹', coins: 260, smiles: 52, roleId: 'role-13', roleCompleted: true },
-  { id: 's-14', no: 14, name: '유서진', avatar: '🐧', coins: 190, smiles: 35, roleId: 'role-14', roleCompleted: false },
-  { id: 's-15', no: 15, name: '임예준', avatar: '🐤', coins: 130, smiles: 19, roleId: 'role-15', roleCompleted: false },
-  { id: 's-16', no: 16, name: '황채원', avatar: '🦔', coins: 240, smiles: 48, roleId: 'role-16', roleCompleted: true },
-  { id: 's-17', no: 17, name: '신은우', avatar: '🐿️', coins: 200, smiles: 38, roleId: 'role-17', roleCompleted: false },
-  { id: 's-18', no: 18, name: '안서윤', avatar: '🦭', coins: 290, smiles: 65, roleId: 'role-18', roleCompleted: false },
-  { id: 's-19', no: 19, name: '류하준', avatar: '🐺', coins: 160, smiles: 26, roleId: 'role-19', roleCompleted: false },
-  { id: 's-20', no: 20, name: '문지안', avatar: '🦉', coins: 330, smiles: 85, roleId: 'role-20', roleCompleted: true }
+  { id: 's-1', no: 1, name: '김민준', avatar: '🦁', coins: 180, exp: 28, roleId: 'role-1', roleCompleted: false },
+  { id: 's-2', no: 2, name: '이서아', avatar: '🐰', coins: 250, exp: 55, roleId: 'role-2', roleCompleted: true },
+  { id: 's-3', no: 3, name: '박도윤', avatar: '🐯', coins: 120, exp: 18, roleId: 'role-3', roleCompleted: false },
+  { id: 's-4', no: 4, name: '정하은', avatar: '🦊', coins: 310, exp: 72, roleId: 'role-4', roleCompleted: true },
+  { id: 's-5', no: 5, name: '최지호', avatar: '🐼', coins: 150, exp: 25, roleId: 'role-5', roleCompleted: false },
+  { id: 's-6', no: 6, name: '윤아인', avatar: '🐨', coins: 220, exp: 44, roleId: 'role-6', roleCompleted: false },
+  { id: 's-7', no: 7, name: '한시우', avatar: '🐶', coins: 190, exp: 36, roleId: 'role-7', roleCompleted: true },
+  { id: 's-8', no: 8, name: '송지우', avatar: '🐱', coins: 280, exp: 63, roleId: 'role-8', roleCompleted: false },
+  { id: 's-9', no: 9, name: '강유준', avatar: '🐻', coins: 140, exp: 22, roleId: 'role-9', roleCompleted: false },
+  { id: 's-10', no: 10, name: '조은서', avatar: '🐸', coins: 300, exp: 68, roleId: 'role-10', roleCompleted: true },
+  { id: 's-11', no: 11, name: '오민서', avatar: '🦄', coins: 210, exp: 40, roleId: 'role-11', roleCompleted: false },
+  { id: 's-12', no: 12, name: '배현우', avatar: '🐵', coins: 170, exp: 30, roleId: 'role-12', roleCompleted: false },
+  { id: 's-13', no: 13, name: '백소율', avatar: '🐹', coins: 260, exp: 52, roleId: 'role-13', roleCompleted: true },
+  { id: 's-14', no: 14, name: '유서진', avatar: '🐧', coins: 190, exp: 35, roleId: 'role-14', roleCompleted: false },
+  { id: 's-15', no: 15, name: '임예준', avatar: '🐤', coins: 130, exp: 19, roleId: 'role-15', roleCompleted: false },
+  { id: 's-16', no: 16, name: '황채원', avatar: '🦔', coins: 240, exp: 48, roleId: 'role-16', roleCompleted: true },
+  { id: 's-17', no: 17, name: '신은우', avatar: '🐿️', coins: 200, exp: 38, roleId: 'role-17', roleCompleted: false },
+  { id: 's-18', no: 18, name: '안서윤', avatar: '🦭', coins: 290, exp: 65, roleId: 'role-18', roleCompleted: false },
+  { id: 's-19', no: 19, name: '류하준', avatar: '🐺', coins: 160, exp: 26, roleId: 'role-19', roleCompleted: false },
+  { id: 's-20', no: 20, name: '문지안', avatar: '🦉', coins: 330, exp: 85, roleId: 'role-20', roleCompleted: true }
 ];
 
 export const INITIAL_SHOP_ITEMS = [
@@ -132,18 +134,18 @@ export const INITIAL_SHOP_ITEMS = [
 ];
 
 export const INITIAL_DAILY_MISSIONS = [
-  { id: 'mission-1', title: '아침 독서 10분 몰입하기', icon: '📖', rewardSmiles: 2, rewardCoins: 10 },
-  { id: 'mission-2', title: '책상 위와 서랍 깨끗이 정리하기', icon: '🧹', rewardSmiles: 1, rewardCoins: 5 },
-  { id: 'mission-3', title: '친구에게 고운 말 & 따뜻한 칭찬하기', icon: '💖', rewardSmiles: 2, rewardCoins: 10 }
+  { id: 'mission-1', title: '아침 독서 10분 몰입하기', icon: '📖', rewardExp: 2, rewardCoins: 10 },
+  { id: 'mission-2', title: '책상 위와 서랍 깨끗이 정리하기', icon: '🧹', rewardExp: 1, rewardCoins: 5 },
+  { id: 'mission-3', title: '친구에게 고운 말 & 따뜻한 칭찬하기', icon: '💖', rewardExp: 2, rewardCoins: 10 }
 ];
 
 export const REASON_PRESETS = [
-  { label: '발표 적극 참여', coins: 20, smiles: 3 },
-  { label: '친구 배려 및 도움', coins: 30, smiles: 5 },
-  { label: '교실 청소 성실히', coins: 25, smiles: 4 },
-  { label: '1인 1역 완벽 수행', coins: 30, smiles: 5 },
-  { label: '과제 및 일기 제출 우수', coins: 20, smiles: 3 },
-  { label: '급식 골고루 다 먹기', coins: 15, smiles: 2 }
+  { label: '발표 적극 참여', coins: 20, exp: 3 },
+  { label: '친구 배려 및 도움', coins: 30, exp: 5 },
+  { label: '교실 청소 성실히', coins: 25, exp: 4 },
+  { label: '1인 1역 완벽 수행', coins: 30, exp: 5 },
+  { label: '과제 및 일기 제출 우수', coins: 20, exp: 3 },
+  { label: '급식 골고루 다 먹기', coins: 15, exp: 2 }
 ];
 
 export const DEDUCT_REASON_PRESETS = [
